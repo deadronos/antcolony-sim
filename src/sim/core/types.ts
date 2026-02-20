@@ -31,4 +31,6 @@ export interface SimState {
     homePheromones: Float32Array;
     grid: Uint8Array;    // TileType values mapped 1D
     colonyFood: number;
+    nestX: number;
+    nestY: number;
 }

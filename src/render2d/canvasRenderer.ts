@@ -1,7 +1,11 @@
 import { CELL_SIZE, WORLD_WIDTH, WORLD_HEIGHT } from '../shared/constants';
 import { AntState, TileType, type SimState } from '../sim/core/types';
 
-export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState) {
+export interface RenderOptions {
+    showPheromones: boolean;
+}
+
+export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState, options: RenderOptions) {
     // Clear background
     ctx.fillStyle = '#1e1e1e';
     ctx.fillRect(0, 0, WORLD_WIDTH * CELL_SIZE, WORLD_HEIGHT * CELL_SIZE);
@@ -25,20 +29,22 @@ export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState)
     }
 
     // 2. Pheromone Heatmaps
-    for (let i = 0; i < state.foodPheromones.length; i++) {
-        const x = i % WORLD_WIDTH;
-        const y = Math.floor(i / WORLD_WIDTH);
+    if (options.showPheromones) {
+        for (let i = 0; i < state.foodPheromones.length; i++) {
+            const x = i % WORLD_WIDTH;
+            const y = Math.floor(i / WORLD_WIDTH);
 
-        const fp = state.foodPheromones[i];
-        if (fp > 0.05) {
-            ctx.fillStyle = `rgba(0, 255, 0, ${fp * 0.5})`;
-            ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
+            const fp = state.foodPheromones[i];
+            if (fp > 0.05) {
+                ctx.fillStyle = `rgba(0, 255, 0, ${fp * 0.5})`;
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
 
-        const hp = state.homePheromones[i];
-        if (hp > 0.05) {
-            ctx.fillStyle = `rgba(0, 150, 255, ${hp * 0.5})`;
-            ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            const hp = state.homePheromones[i];
+            if (hp > 0.05) {
+                ctx.fillStyle = `rgba(0, 150, 255, ${hp * 0.5})`;
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
         }
     }
 

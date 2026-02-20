@@ -31,10 +31,11 @@ function App() {
             // Avoid updating Zustand every frame to prevent React overhead,
             // or do it selectively. For now we update it every frame.
             setSimState(state);
-
             const ctx = canvasRef.current?.getContext('2d');
             if (ctx) {
-              renderSimulation(ctx, state);
+              renderSimulation(ctx, state, {
+                showPheromones: useUIStore.getState().showPheromones
+              });
             }
           }
         } catch (e) {

@@ -9,6 +9,7 @@ import type { SimState } from '../sim/core/types';
 let state: SimState | null = null;
 let intervalId: number | null = null;
 let isPaused = true;
+let currentSpeed = 1;
 
 const api = {
     init() {
@@ -19,7 +20,9 @@ const api = {
             foodPheromones: createPheromones(),
             homePheromones: createPheromones(),
             grid,
-            colonyFood: 0
+            colonyFood: 0,
+            nestX,
+            nestY
         };
     },
     start() {
@@ -28,7 +31,10 @@ const api = {
         isPaused = false;
         intervalId = setInterval(() => {
             if (!isPaused && state) {
-                tick(state);
+                // If speed is > 1, process multiple simulation ticks per interval tick
+                for (let i = 0; i < currentSpeed; i++) {
+                    tick(state);
+                }
             }
         }, TICK_INTERVAL_MS) as unknown as number;
     },
@@ -42,6 +48,9 @@ const api = {
     reset() {
         this.pause();
         this.init();
+    },
+    setSpeed(speed: number) {
+        currentSpeed = speed;
     },
     getState(): SimState | null {
         return state;

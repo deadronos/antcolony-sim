@@ -1,8 +1,13 @@
 import { useUIStore } from '../store/uiStore';
 import { simWorker } from '../../worker/simBridge';
+import './ControlsPanel.css';
 
-export const ControlsPanel: React.FC = () => {
-    const { isPaused, setPaused, simState } = useUIStore();
+export const ControlsPanel = () => {
+    const {
+        isPaused, setPaused, simState,
+        speedMultiplier, setSpeedMultiplier,
+        showPheromones, setShowPheromones
+    } = useUIStore();
 
     const handlePlayPause = async () => {
         if (isPaused) {
@@ -20,26 +25,67 @@ export const ControlsPanel: React.FC = () => {
         setPaused(false);
     };
 
+    const handleSpeed = async (newSpeed: number) => {
+        await simWorker.setSpeed(newSpeed);
+        setSpeedMultiplier(newSpeed);
+    };
+
     return (
-        <div style={{
-            position: 'absolute', top: 10, right: 10,
-            background: 'rgba(0,0,0,0.8)', color: 'white', padding: '15px', borderRadius: '8px',
-            fontFamily: 'monospace', width: '250px'
-        }}>
-            <h2>Colony Controls</h2>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                <button onClick={handlePlayPause} style={{ flex: 1, padding: '8px' }}>
-                    {isPaused ? 'Play' : 'Pause'}
+        <div className="controls-panel">
+            <h2 className="panel-title">Colony Controls</h2>
+
+            <div className="status-grid">
+                <div className="status-item">
+                    <span className="label">Tick</span>
+                    <span className="value">{simState?.tick || 0}</span>
+                </div>
+                <div className="status-item">
+                    <span className="label">Ants</span>
+                    <span className="value">{simState?.ants?.length || 0}</span>
+                </div>
+                <div className="status-item">
+                    <span className="label">Colony Food</span>
+                    <span className="value text-highlight">{simState?.colonyFood || 0}</span>
+                </div>
+            </div>
+
+            <div className="control-group">
+                <button
+                    className={`btn-primary ${!isPaused ? 'active' : ''}`}
+                    onClick={handlePlayPause}
+                >
+                    {isPaused ? '▶ Play' : '⏸ Pause'}
                 </button>
-                <button onClick={handleReset} style={{ flex: 1, padding: '8px' }}>
-                    Reset
+                <button className="btn-secondary" onClick={handleReset}>
+                    ↺ Reset
                 </button>
             </div>
 
-            <div>
-                <p>Tick: {simState?.tick || 0}</p>
-                <p>Ants: {simState?.ants?.length || 0}</p>
-                <p>Colony Food: {simState?.colonyFood || 0}</p>
+            <div className="control-section">
+                <h3 className="section-title">Speed Multiplier</h3>
+                <div className="button-group">
+                    {[1, 2, 4].map((speed) => (
+                        <button
+                            key={speed}
+                            className={`btn-toggle ${speedMultiplier === speed ? 'active' : ''}`}
+                            onClick={() => handleSpeed(speed)}
+                        >
+                            {speed}x
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="control-section">
+                <h3 className="section-title">Debug Overlays</h3>
+                <label className="toggle-label">
+                    <input
+                        type="checkbox"
+                        checked={showPheromones}
+                        onChange={(e) => setShowPheromones(e.target.checked)}
+                    />
+                    Pheromone Heatmap
+                </label>
             </div>
         </div>
     );
