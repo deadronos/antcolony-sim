@@ -1,0 +1,94 @@
+.upgrades-panel {
+    top: 20px;
+    left: 20px;
+    right: auto;
+    width: 340px;
+}
+
+.upgrades-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.upgrade-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.upgrade-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.upgrade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.upgrade-header h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+.level-badge {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.upgrade-desc {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.btn-purchase {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn-purchase.affordable {
+    background: rgba(50, 205, 50, 0.2);
+    color: #32CD32;
+    border: 1px solid rgba(50, 205, 50, 0.4);
+}
+
+.btn-purchase.affordable:hover {
+    background: rgba(50, 205, 50, 0.3);
+    box-shadow: 0 0 15px rgba(50, 205, 50, 0.2);
+}
+
+.btn-purchase.locked {
+    background: rgba(255, 255, 255, 0.05);
+    color: #666;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+}
+
+.btn-purchase.maxed {
+    background: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    cursor: default;
+}

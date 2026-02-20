@@ -24,6 +24,12 @@ export interface Ant {
     wanderTimer: number; // to occasionally pick a new random direction
 }
 
+export interface SimUpgrades {
+    antSpeedLevel: number;
+    sensorRangeLevel: number;
+    pheromoneDropLevel: number;
+}
+
 export interface SimState {
     tick: number;
     ants: Ant[];
@@ -33,4 +39,5 @@ export interface SimState {
     colonyFood: number;
     nestX: number;
     nestY: number;
+    upgrades: SimUpgrades;
 }

@@ -3,6 +3,7 @@ import { simWorker } from './worker/simBridge';
 import { useUIStore } from './ui/store/uiStore';
 import { renderSimulation } from './render2d/canvasRenderer';
 import { ControlsPanel } from './ui/panels/ControlsPanel';
+import { UpgradesPanel } from './ui/panels/UpgradesPanel';
 import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from './shared/constants';
 import './index.css';
 
@@ -60,6 +61,7 @@ function App() {
         height={WORLD_HEIGHT * CELL_SIZE}
         className="sim-canvas"
       />
+      <UpgradesPanel />
       <ControlsPanel />
     </div>
   );

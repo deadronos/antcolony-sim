@@ -1,20 +1,23 @@
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
 import { AntState, TileType, type Ant, type SimState } from '../core/types';
 import { getIndex } from '../utils/grid';
+import { UPGRADE_DEFS } from '../core/upgrades';
 
-const ANT_SPEED = 0.5;
 const WANDER_STRENGTH = 0.2;
 
 export function updateAnts(state: SimState) {
+    const ANT_SPEED = UPGRADE_DEFS.antSpeedLevel.getValue(state.upgrades.antSpeedLevel);
+    const PHEROMONE_DROP = UPGRADE_DEFS.pheromoneDropLevel.getValue(state.upgrades.pheromoneDropLevel);
+
     for (const ant of state.ants) {
         // 1. Drop Pheromone based on current state
         const idx = getIndex(Math.floor(ant.x), Math.floor(ant.y));
         if (ant.state === AntState.SEARCHING) {
             // Drop home pheromone
-            state.homePheromones[idx] = Math.min(state.homePheromones[idx] + 0.1, 1.0);
+            state.homePheromones[idx] = Math.min(state.homePheromones[idx] + PHEROMONE_DROP, 1.0);
         } else {
             // Drop food pheromone
-            state.foodPheromones[idx] = Math.min(state.foodPheromones[idx] + 0.1, 1.0);
+            state.foodPheromones[idx] = Math.min(state.foodPheromones[idx] + PHEROMONE_DROP, 1.0);
         }
 
         // 2. Sense and Steer
@@ -62,7 +65,7 @@ export function updateAnts(state: SimState) {
 }
 
 function steerAnt(ant: Ant, state: SimState) {
-    const SENSOR_DIST = 10;
+    const SENSOR_DIST = UPGRADE_DEFS.sensorRangeLevel.getValue(state.upgrades.sensorRangeLevel);
     const SENSOR_SPREAD = Math.PI / 4;
 
     const targetPheromone = ant.state === AntState.SEARCHING ? state.foodPheromones : state.homePheromones;

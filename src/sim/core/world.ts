@@ -42,5 +42,32 @@ export function createWorld(): WorldSetupResult {
     createFoodPatch(Math.floor(WORLD_WIDTH * 0.2), Math.floor(WORLD_HEIGHT * 0.2), 4);
     createFoodPatch(Math.floor(WORLD_WIDTH * 0.8), Math.floor(WORLD_HEIGHT * 0.7), 6);
 
+    // Add random geometric obstacles (walls) to make pathing interesting
+    const numObstacles = 15;
+    for (let i = 0; i < numObstacles; i++) {
+        const cx = Math.floor(Math.random() * WORLD_WIDTH);
+        const cy = Math.floor(Math.random() * WORLD_HEIGHT);
+
+        // Don't spawn walls too close to the nest
+        const distToNest = Math.sqrt((cx - nestX) ** 2 + (cy - nestY) ** 2);
+        if (distToNest < 20) continue;
+
+        // Create a clump of walls
+        const w = 2 + Math.floor(Math.random() * 8);
+        const h = 2 + Math.floor(Math.random() * 8);
+
+        for (let y = cy; y < cy + h; y++) {
+            for (let x = cx; x < cx + w; x++) {
+                if (x >= 0 && x < WORLD_WIDTH && y >= 0 && y < WORLD_HEIGHT) {
+                    const idx = getIndex(x, y);
+                    // Only overwrite empty space
+                    if (grid[idx] === TileType.EMPTY) {
+                        grid[idx] = TileType.WALL;
+                    }
+                }
+            }
+        }
+    }
+
     return { grid, nestX, nestY };
 }

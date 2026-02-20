@@ -17,13 +17,13 @@ export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState,
         const tile = state.grid[i];
 
         if (tile === TileType.NEST) {
-            ctx.fillStyle = '#8B4513';
+            ctx.fillStyle = '#6b4c31'; // Lighter, structured dirt
             ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         } else if (tile === TileType.FOOD) {
             ctx.fillStyle = '#32CD32';
             ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         } else if (tile === TileType.WALL) {
-            ctx.fillStyle = '#555555';
+            ctx.fillStyle = '#3d2b1f'; // Organic dark dirt color
             ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         }
     }
