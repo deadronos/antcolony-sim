@@ -6,7 +6,8 @@ export const ControlsPanel = () => {
     const {
         isPaused, setPaused, simState,
         speedMultiplier, setSpeedMultiplier,
-        showPheromones, setShowPheromones
+        showPheromones, setShowPheromones,
+        renderMode, setRenderMode
     } = useUIStore();
 
     const handlePlayPause = async () => {
@@ -77,12 +78,31 @@ export const ControlsPanel = () => {
             </div>
 
             <div className="control-section">
-                <h3 className="section-title">Debug Overlays</h3>
+                <h3 className="section-title">Display Mode</h3>
+                <div className="button-group">
+                    <button
+                        className={`btn-toggle ${renderMode === '2D' ? 'active' : ''}`}
+                        onClick={() => setRenderMode('2D')}
+                    >
+                        2D Map
+                    </button>
+                    <button
+                        className={`btn-toggle ${renderMode === '3D' ? 'active' : ''}`}
+                        onClick={() => setRenderMode('3D')}
+                    >
+                        3D Orbit
+                    </button>
+                </div>
+            </div>
+
+            <div className="control-section">
+                <h3 className="section-title">Debug Overlays (2D Only)</h3>
                 <label className="toggle-label">
                     <input
                         type="checkbox"
                         checked={showPheromones}
                         onChange={(e) => setShowPheromones(e.target.checked)}
+                        disabled={renderMode !== '2D'}
                     />
                     Pheromone Heatmap
                 </label>

@@ -6,10 +6,12 @@ interface UIStore {
     isPaused: boolean;
     speedMultiplier: number;
     showPheromones: boolean;
+    renderMode: '2D' | '3D';
     setSimState: (state: SimState | null) => void;
     setPaused: (paused: boolean) => void;
     setSpeedMultiplier: (speed: number) => void;
     setShowPheromones: (show: boolean) => void;
+    setRenderMode: (mode: '2D' | '3D') => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -17,8 +19,10 @@ export const useUIStore = create<UIStore>((set) => ({
     isPaused: true,
     speedMultiplier: 1,
     showPheromones: true,
+    renderMode: '2D',
     setSimState: (state) => set({ simState: state }),
     setPaused: (paused) => set({ isPaused: paused }),
     setSpeedMultiplier: (speed) => set({ speedMultiplier: speed }),
-    setShowPheromones: (show) => set({ showPheromones: show })
+    setShowPheromones: (show) => set({ showPheromones: show }),
+    setRenderMode: (mode) => set({ renderMode: mode })
 }));

@@ -4,12 +4,13 @@ import { useUIStore } from './ui/store/uiStore';
 import { renderSimulation } from './render2d/canvasRenderer';
 import { ControlsPanel } from './ui/panels/ControlsPanel';
 import { UpgradesPanel } from './ui/panels/UpgradesPanel';
+import { AntScene } from './render3d/AntScene';
 import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from './shared/constants';
 import './index.css';
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { setSimState, setPaused } = useUIStore();
+  const { setSimState, setPaused, renderMode } = useUIStore();
 
   useEffect(() => {
     // Init simulation on mount
@@ -19,7 +20,10 @@ function App() {
       setPaused(true);
     };
     init();
+  }, [setPaused]);
 
+  // Separate effect for rendering loop to ensure we pick up UI store changes
+  useEffect(() => {
     let rafId: number;
     let isFetching = false;
 
@@ -29,14 +33,16 @@ function App() {
         try {
           const state = await simWorker.getState();
           if (state) {
-            // Avoid updating Zustand every frame to prevent React overhead,
-            // or do it selectively. For now we update it every frame.
             setSimState(state);
-            const ctx = canvasRef.current?.getContext('2d');
-            if (ctx) {
-              renderSimulation(ctx, state, {
-                showPheromones: useUIStore.getState().showPheromones
-              });
+
+            // Only fire 2D canvas renders if we are actually looking at it
+            if (useUIStore.getState().renderMode === '2D') {
+              const ctx = canvasRef.current?.getContext('2d');
+              if (ctx) {
+                renderSimulation(ctx, state, {
+                  showPheromones: useUIStore.getState().showPheromones
+                });
+              }
             }
           }
         } catch (e) {
@@ -51,16 +57,20 @@ function App() {
     rafId = requestAnimationFrame(loop);
 
     return () => cancelAnimationFrame(rafId);
-  }, [setSimState, setPaused]);
+  }, [setSimState]);
 
   return (
     <div className="app-container">
-      <canvas
-        ref={canvasRef}
-        width={WORLD_WIDTH * CELL_SIZE}
-        height={WORLD_HEIGHT * CELL_SIZE}
-        className="sim-canvas"
-      />
+      {renderMode === '2D' ? (
+        <canvas
+          ref={canvasRef}
+          width={WORLD_WIDTH * CELL_SIZE}
+          height={WORLD_HEIGHT * CELL_SIZE}
+          className="sim-canvas"
+        />
+      ) : (
+        <AntScene />
+      )}
       <UpgradesPanel />
       <ControlsPanel />
     </div>
