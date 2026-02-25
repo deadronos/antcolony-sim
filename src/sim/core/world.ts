@@ -6,6 +6,7 @@ import { createNoise2D } from 'simplex-noise';
 export interface WorldSetupResult {
     grid: Uint8Array;
     foodQuantity: Uint8Array;
+    foodTileCount: number;
     nestX: number;
     nestY: number;
 }
@@ -52,6 +53,7 @@ export function createWorld(): WorldSetupResult {
     // 3. Generate Food Patches using Noise
     // We want a different seed or offset for food
     const foodNoise = createNoise2D(); 
+    let foodTileCount = 0;
     for (let y = 0; y < WORLD_HEIGHT; y++) {
         for (let x = 0; x < WORLD_WIDTH; x++) {
             const idx = getIndex(x, y);
@@ -65,9 +67,10 @@ export function createWorld(): WorldSetupResult {
             if (fn > 0.75) {
                 grid[idx] = TileType.FOOD;
                 foodQuantity[idx] = FOOD_INITIAL_QUANTITY;
+                foodTileCount++;
             }
         }
     }
 
-    return { grid, foodQuantity, nestX, nestY };
+    return { grid, foodQuantity, foodTileCount, nestX, nestY };
 }

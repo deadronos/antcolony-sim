@@ -53,6 +53,7 @@ export interface SimState {
     homePheromones: Float32Array;
     grid: Uint8Array;         // TileType values mapped 1D
     foodQuantity: Uint8Array; // Remaining food units per tile (only meaningful for FOOD tiles)
+    foodTileCount: number;    // Number of active food tiles
     colonyFood: number;
     nestX: number;
     nestY: number;
