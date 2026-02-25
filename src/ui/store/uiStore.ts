@@ -1,13 +1,13 @@
 import { create } from 'zustand';
-import type { SimState } from '../../sim/core/types';
+import type { SimState, SimSnapshot } from '../../sim/core/types';
 
 interface UIStore {
-    simState: SimState | null;
+    simState: SimState | SimSnapshot | null;
     isPaused: boolean;
     speedMultiplier: number;
     showPheromones: boolean;
     renderMode: '2D' | '3D';
-    setSimState: (state: SimState | null) => void;
+    setSimState: (state: SimState | SimSnapshot | null) => void;
     setPaused: (paused: boolean) => void;
     setSpeedMultiplier: (speed: number) => void;
     setShowPheromones: (show: boolean) => void;

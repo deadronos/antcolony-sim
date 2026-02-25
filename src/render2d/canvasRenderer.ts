@@ -5,47 +5,78 @@ export interface RenderOptions {
     showPheromones: boolean;
 }
 
-export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState, options: RenderOptions) {
-    // Clear background
-    ctx.fillStyle = '#1e1e1e';
-    ctx.fillRect(0, 0, WORLD_WIDTH * CELL_SIZE, WORLD_HEIGHT * CELL_SIZE);
+let offscreenCanvas: HTMLCanvasElement | null = null;
+let pheromoneImageData: ImageData | null = null;
+let pheromoneBuffer: Uint8ClampedArray | null = null;
 
-    // 1. Grid (Nest, Food, Wall)
-    for (let i = 0; i < state.grid.length; i++) {
-        const x = i % WORLD_WIDTH;
-        const y = Math.floor(i / WORLD_WIDTH);
-        const tile = state.grid[i];
+function getOffscreenCanvas(state: SimState | SimSnapshot) {
+    if (!offscreenCanvas) {
+        if (!('grid' in state)) return null; // Can't init without grid
 
-        if (tile === TileType.NEST) {
-            ctx.fillStyle = '#6b4c31'; // Lighter, structured dirt
-            ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        } else if (tile === TileType.FOOD) {
-            ctx.fillStyle = '#32CD32';
-            ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        } else if (tile === TileType.WALL) {
-            ctx.fillStyle = '#3d2b1f'; // Organic dark dirt color
-            ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
-    }
+        offscreenCanvas = document.createElement('canvas');
+        offscreenCanvas.width = WORLD_WIDTH * CELL_SIZE;
+        offscreenCanvas.height = WORLD_HEIGHT * CELL_SIZE;
+        const ctx = offscreenCanvas.getContext('2d')!;
 
-    // 2. Pheromone Heatmaps
-    if (options.showPheromones) {
-        for (let i = 0; i < state.foodPheromones.length; i++) {
+        // Draw static grid once
+        ctx.fillStyle = '#1e1e1e';
+        ctx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+        for (let i = 0; i < state.grid.length; i++) {
             const x = i % WORLD_WIDTH;
             const y = Math.floor(i / WORLD_WIDTH);
+            const tile = state.grid[i];
 
-            const fp = state.foodPheromones[i];
-            if (fp > 0.05) {
-                ctx.fillStyle = `rgba(0, 255, 0, ${fp * 0.5})`;
+            if (tile === TileType.NEST) {
+                ctx.fillStyle = '#6b4c31';
                 ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            }
-
-            const hp = state.homePheromones[i];
-            if (hp > 0.05) {
-                ctx.fillStyle = `rgba(0, 150, 255, ${hp * 0.5})`;
+            } else if (tile === TileType.FOOD) {
+                ctx.fillStyle = '#32CD32';
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            } else if (tile === TileType.WALL) {
+                ctx.fillStyle = '#3d2b1f';
                 ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
         }
+    }
+    return offscreenCanvas;
+}
+
+export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState | SimSnapshot, options: RenderOptions) {
+    // 1. Draw cached static background
+    const bg = getOffscreenCanvas(state);
+    if (bg) ctx.drawImage(bg, 0, 0);
+
+    // 2. Pheromone Heatmaps (Optimized with ImageData)
+    if (options.showPheromones) {
+        if (!pheromoneImageData) {
+            pheromoneImageData = new ImageData(WORLD_WIDTH, WORLD_HEIGHT);
+            pheromoneBuffer = pheromoneImageData.data;
+        }
+
+        const data = pheromoneBuffer!;
+        for (let i = 0; i < state.foodPheromones.length; i++) {
+            const fp = state.foodPheromones[i];
+            const hp = state.homePheromones[i];
+            const dataIdx = i * 4;
+
+            // Food Pheromone: Green
+            // Home Pheromone: Blue
+            // We can mix them or prioritize
+            data[dataIdx + 0] = 0; // R
+            data[dataIdx + 1] = Math.min(255, fp * 255); // G
+            data[dataIdx + 2] = Math.min(255, hp * 255); // B
+            data[dataIdx + 3] = Math.max(fp, hp) * 128; // A (semi-transparent)
+        }
+
+        // Create a temporary small canvas to scale up the pheromone ImageData
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = WORLD_WIDTH;
+        tempCanvas.height = WORLD_HEIGHT;
+        tempCanvas.getContext('2d')!.putImageData(pheromoneImageData, 0, 0);
+
+        ctx.imageSmoothingEnabled = true; // Smooth trails
+        ctx.drawImage(tempCanvas, 0, 0, WORLD_WIDTH * CELL_SIZE, WORLD_HEIGHT * CELL_SIZE);
     }
 
     // 3. Ants

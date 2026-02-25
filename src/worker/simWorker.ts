@@ -4,10 +4,11 @@ import { createAnts } from '../sim/core/ants';
 import { createPheromones } from '../sim/core/pheromones';
 import { tick } from '../sim/core/tick';
 import { TICK_INTERVAL_MS } from '../shared/constants';
-import type { SimState, SimUpgrades } from '../sim/core/types';
+import type { SimState, SimUpgrades, SimSnapshot } from '../sim/core/types';
 import { UPGRADE_DEFS, getUpgradeCost, INITIAL_UPGRADES } from '../sim/core/upgrades';
 
 let state: SimState | null = null;
+let scratchBuffer: Float32Array | null = null;
 let intervalId: number | null = null;
 let isPaused = true;
 let currentSpeed = 1;
@@ -15,6 +16,7 @@ let currentSpeed = 1;
 const api = {
     init() {
         const { grid, nestX, nestY } = createWorld();
+        scratchBuffer = createPheromones();
         state = {
             tick: 0,
             ants: createAnts(nestX, nestY),
@@ -28,14 +30,14 @@ const api = {
         };
     },
     start() {
-        if (!state) this.init();
+        if (!state || !scratchBuffer) this.init();
         if (intervalId) return;
         isPaused = false;
         intervalId = setInterval(() => {
-            if (!isPaused && state) {
+            if (!isPaused && state && scratchBuffer) {
                 // If speed is > 1, process multiple simulation ticks per interval tick
                 for (let i = 0; i < currentSpeed; i++) {
-                    tick(state);
+                    tick(state, scratchBuffer);
                 }
             }
         }, TICK_INTERVAL_MS) as unknown as number;
@@ -69,6 +71,17 @@ const api = {
     },
     getState(): SimState | null {
         return state;
+    },
+    getSnapshot(): SimSnapshot | null {
+        if (!state) return null;
+        return {
+            tick: state.tick,
+            ants: state.ants, // Still an array of objects for now
+            foodPheromones: state.foodPheromones,
+            homePheromones: state.homePheromones,
+            colonyFood: state.colonyFood,
+            upgrades: state.upgrades
+        };
     }
 };
 

@@ -41,3 +41,12 @@ export interface SimState {
     nestY: number;
     upgrades: SimUpgrades;
 }
+
+export interface SimSnapshot {
+    tick: number;
+    ants: Ant[];
+    foodPheromones: Float32Array;
+    homePheromones: Float32Array;
+    colonyFood: number;
+    upgrades: SimUpgrades;
+}

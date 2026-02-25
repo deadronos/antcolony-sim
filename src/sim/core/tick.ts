@@ -1,16 +1,19 @@
 import type { SimState } from './types';
-import { evaporatePheromones } from './pheromones';
+import { evaporatePheromones, diffusePheromones } from './pheromones';
 import { updateAnts } from '../systems/antSystem';
 import { FOOD_TO_SPAWN } from '../../shared/constants';
 import { AntState } from './types';
 
 // Run one simulation tick
-export function tick(state: SimState) {
+export function tick(state: SimState, scratchBuffer: Float32Array) {
     // 1. Update Ant positions, sensors, drops
     updateAnts(state);
 
-    // 2. Decay pheromones over time
-    // Only evaporate every few ticks, or with a very small rate
+    // 2. Diffusion and Decay
+    // We diffuse first to spread the scent, then decay to keep it fresh
+    diffusePheromones(state.homePheromones, scratchBuffer, 0.1);
+    diffusePheromones(state.foodPheromones, scratchBuffer, 0.1);
+
     evaporatePheromones(state.homePheromones, 0.005);
     evaporatePheromones(state.foodPheromones, 0.002);
 

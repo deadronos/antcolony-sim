@@ -7,5 +7,5 @@ export function getIndex(x: number, y: number): number {
 
 // Check if x, y is within bounds
 export function inBounds(x: number, y: number): boolean {
-    return x >= 0 && x < WORLD_WIDTH && y >= 0 && y < WORLD_HEIGHT; // Oops, need WORLD_HEIGHT
+    return x >= 0 && x < WORLD_WIDTH && y >= 0 && y < WORLD_HEIGHT;
 }
