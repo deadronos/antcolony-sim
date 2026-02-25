@@ -1,10 +1,12 @@
-import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
+import { WORLD_WIDTH, WORLD_HEIGHT, FOOD_INITIAL_QUANTITY } from '../../shared/constants';
 import { TileType } from './types';
 import { getIndex } from '../utils/grid';
 import { createNoise2D } from 'simplex-noise';
 
 export interface WorldSetupResult {
     grid: Uint8Array;
+    foodQuantity: Uint8Array;
+    foodTileCount: number;
     nestX: number;
     nestY: number;
 }
@@ -12,6 +14,7 @@ export interface WorldSetupResult {
 export function createWorld(): WorldSetupResult {
     const size = WORLD_WIDTH * WORLD_HEIGHT;
     const grid = new Uint8Array(size);
+    const foodQuantity = new Uint8Array(size);
     const noise2D = createNoise2D();
 
     // Default to empty
@@ -50,6 +53,7 @@ export function createWorld(): WorldSetupResult {
     // 3. Generate Food Patches using Noise
     // We want a different seed or offset for food
     const foodNoise = createNoise2D(); 
+    let foodTileCount = 0;
     for (let y = 0; y < WORLD_HEIGHT; y++) {
         for (let x = 0; x < WORLD_WIDTH; x++) {
             const idx = getIndex(x, y);
@@ -62,9 +66,11 @@ export function createWorld(): WorldSetupResult {
             // If noise is high, it's a potential food patch
             if (fn > 0.75) {
                 grid[idx] = TileType.FOOD;
+                foodQuantity[idx] = FOOD_INITIAL_QUANTITY;
+                foodTileCount++;
             }
         }
     }
 
-    return { grid, nestX, nestY };
+    return { grid, foodQuantity, foodTileCount, nestX, nestY };
 }

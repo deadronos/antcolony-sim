@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createPheromones, evaporatePheromones, diffusePheromones } from './pheromones';
 import { getIndex } from '../utils/grid';
-import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
 
 describe('Pheromone Logic', () => {
     let grid: Float32Array;

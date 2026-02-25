@@ -51,7 +51,9 @@ export interface SimState {
     brood: BroodItem[];
     foodPheromones: Float32Array;
     homePheromones: Float32Array;
-    grid: Uint8Array;    // TileType values mapped 1D
+    grid: Uint8Array;         // TileType values mapped 1D
+    foodQuantity: Uint8Array; // Remaining food units per tile (only meaningful for FOOD tiles)
+    foodTileCount: number;    // Number of active food tiles
     colonyFood: number;
     nestX: number;
     nestY: number;
@@ -64,6 +66,8 @@ export interface SimSnapshot {
     brood: BroodItem[];
     foodPheromones: Float32Array;
     homePheromones: Float32Array;
+    grid: Uint8Array;
+    foodTileCount: number;
     colonyFood: number;
     upgrades: SimUpgrades;
 }

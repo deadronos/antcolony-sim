@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { simWorker } from './worker/simBridge';
 import { useUIStore } from './ui/store/uiStore';
-import { renderSimulation } from './render2d/canvasRenderer';
+import { renderSimulation, invalidateStaticCanvas } from './render2d/canvasRenderer';
 import { ControlsPanel } from './ui/panels/ControlsPanel';
 import { UpgradesPanel } from './ui/panels/UpgradesPanel';
 import { AntScene } from './render3d/AntScene';
@@ -16,9 +16,6 @@ function App() {
     // Init simulation on mount
     const init = async () => {
       await simWorker.init();
-      // Get initial full state once to populate static grid/nest
-      const initialState = await simWorker.getState();
-      setSimState(initialState);
       await simWorker.pause();
       setPaused(true);
     };
@@ -36,13 +33,17 @@ function App() {
         try {
           const snapshot = await simWorker.getSnapshot();
           if (snapshot) {
+            // Invalidate static canvas on reset so it gets rebuilt with new grid
+            if (snapshot.tick === 0) {
+              invalidateStaticCanvas();
+            }
             setSimState(snapshot);
 
             // Only fire 2D canvas renders if we are actually looking at it
             if (useUIStore.getState().renderMode === '2D') {
               const ctx = canvasRef.current?.getContext('2d');
               if (ctx) {
-                renderSimulation(ctx, snapshot as any, {
+                renderSimulation(ctx, snapshot, {
                   showPheromones: useUIStore.getState().showPheromones
                 });
               }

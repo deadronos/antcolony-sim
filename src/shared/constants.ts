@@ -5,3 +5,4 @@ export const TICKS_PER_SECOND = 30;
 export const TICK_INTERVAL_MS = 1000 / TICKS_PER_SECOND;
 export const TOTAL_ANTS = 200;
 export const FOOD_TO_SPAWN = 5;
+export const FOOD_INITIAL_QUANTITY = 10; // Number of food units per tile before depletion

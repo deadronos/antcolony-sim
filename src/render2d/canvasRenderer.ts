@@ -1,5 +1,5 @@
 import { CELL_SIZE, WORLD_WIDTH, WORLD_HEIGHT } from '../shared/constants';
-import { AntState, TileType, type SimState } from '../sim/core/types';
+import { AntState, TileType, type SimState, type SimSnapshot } from '../sim/core/types';
 
 export interface RenderOptions {
     showPheromones: boolean;
@@ -18,7 +18,7 @@ function getOffscreenCanvas(state: SimState | SimSnapshot) {
         offscreenCanvas.height = WORLD_HEIGHT * CELL_SIZE;
         const ctx = offscreenCanvas.getContext('2d')!;
 
-        // Draw static grid once
+        // Draw static grid (walls and nest only; food is drawn dynamically)
         ctx.fillStyle = '#1e1e1e';
         ctx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
 
@@ -30,9 +30,6 @@ function getOffscreenCanvas(state: SimState | SimSnapshot) {
             if (tile === TileType.NEST) {
                 ctx.fillStyle = '#6b4c31';
                 ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            } else if (tile === TileType.FOOD) {
-                ctx.fillStyle = '#32CD32';
-                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             } else if (tile === TileType.WALL) {
                 ctx.fillStyle = '#3d2b1f';
                 ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -42,12 +39,28 @@ function getOffscreenCanvas(state: SimState | SimSnapshot) {
     return offscreenCanvas;
 }
 
+export function invalidateStaticCanvas() {
+    offscreenCanvas = null;
+}
+
 export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState | SimSnapshot, options: RenderOptions) {
-    // 1. Draw cached static background
+    // 1. Draw cached static background (walls and nest)
     const bg = getOffscreenCanvas(state);
     if (bg) ctx.drawImage(bg, 0, 0);
 
-    // 2. Pheromone Heatmaps (Optimized with ImageData)
+    // 2. Draw food tiles dynamically so depletion is reflected each frame
+    if ('grid' in state) {
+        ctx.fillStyle = '#32CD32';
+        for (let i = 0; i < state.grid.length; i++) {
+            if (state.grid[i] === TileType.FOOD) {
+                const x = i % WORLD_WIDTH;
+                const y = Math.floor(i / WORLD_WIDTH);
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+        }
+    }
+
+    // 3. Pheromone Heatmaps (Optimized with ImageData)
     if (options.showPheromones) {
         if (!pheromoneImageData) {
             pheromoneImageData = new ImageData(WORLD_WIDTH, WORLD_HEIGHT);
@@ -79,7 +92,7 @@ export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState 
         ctx.drawImage(tempCanvas, 0, 0, WORLD_WIDTH * CELL_SIZE, WORLD_HEIGHT * CELL_SIZE);
     }
 
-    // 3. Ants
+    // 4. Ants
     for (const ant of state.ants) {
         ctx.save();
         // Move to ant center
