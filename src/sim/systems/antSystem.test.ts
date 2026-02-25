@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { updateAnts } from './antSystem';
-import { AntState, TileType, type SimState } from '../core/types';
+import { AntState, AntType, TileType, type SimState } from '../core/types';
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
 import { INITIAL_UPGRADES } from '../core/upgrades';
 import { getIndex } from '../utils/grid';
@@ -25,7 +25,8 @@ describe('Ant System', () => {
             colonyFood: 0,
             nestX: 10,
             nestY: 10,
-            upgrades: { ...INITIAL_UPGRADES }
+            upgrades: { ...INITIAL_UPGRADES },
+            productionType: AntType.WORKER
         };
     });
 
@@ -42,6 +43,7 @@ describe('Ant System', () => {
         
         state.ants.push({
             id: 1,
+            type: AntType.WORKER,
             x: foodX,
             y: foodY,
             angle: 0,
@@ -67,6 +69,7 @@ describe('Ant System', () => {
 
         state.ants.push({
             id: 1,
+            type: AntType.WORKER,
             x: foodX,
             y: foodY,
             angle: 0,
@@ -88,6 +91,7 @@ describe('Ant System', () => {
         
         state.ants.push({
             id: 1,
+            type: AntType.WORKER,
             x: nestX,
             y: nestY,
             angle: 0,
@@ -116,6 +120,7 @@ describe('Ant System', () => {
         const initialAngle = 0;
         state.ants.push({
             id: 1,
+            type: AntType.WORKER,
             x: antX,
             y: antY,
             angle: initialAngle,

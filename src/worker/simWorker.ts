@@ -4,7 +4,7 @@ import { createAnts } from '../sim/core/ants';
 import { createPheromones } from '../sim/core/pheromones';
 import { tick } from '../sim/core/tick';
 import { TICK_INTERVAL_MS } from '../shared/constants';
-import type { SimState, SimUpgrades, SimSnapshot } from '../sim/core/types';
+import { AntType, type SimState, type SimUpgrades, type SimSnapshot } from '../sim/core/types';
 import { UPGRADE_DEFS, getUpgradeCost, INITIAL_UPGRADES } from '../sim/core/upgrades';
 
 let state: SimState | null = null;
@@ -29,7 +29,8 @@ const api = {
             colonyFood: 100, // Start with some food for buying upgrades faster
             nestX,
             nestY,
-            upgrades: { ...INITIAL_UPGRADES }
+            upgrades: { ...INITIAL_UPGRADES },
+            productionType: AntType.WORKER
         };
     },
     start() {
@@ -59,6 +60,9 @@ const api = {
     setSpeed(speed: number) {
         currentSpeed = speed;
     },
+    setProductionType(type: AntType) {
+        if (state) state.productionType = type;
+    },
     purchaseUpgrade(upgradeId: keyof SimUpgrades) {
         if (!state) return;
         const def = UPGRADE_DEFS[upgradeId];
@@ -86,7 +90,8 @@ const api = {
             grid: state.grid,
             foodTileCount: state.foodTileCount,
             colonyFood: state.colonyFood,
-            upgrades: state.upgrades
+            upgrades: state.upgrades,
+            productionType: state.productionType
         };
     }
 };

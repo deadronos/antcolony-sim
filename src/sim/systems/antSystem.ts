@@ -1,15 +1,24 @@
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
-import { AntState, TileType, type Ant, type SimState } from '../core/types';
+import { AntState, AntType, TileType, type Ant, type SimState } from '../core/types';
 import { getIndex } from '../utils/grid';
 import { UPGRADE_DEFS } from '../core/upgrades';
 
 const WANDER_STRENGTH = 0.2;
 
 export function updateAnts(state: SimState) {
-    const ANT_SPEED = UPGRADE_DEFS.antSpeedLevel.getValue(state.upgrades.antSpeedLevel);
+    const BASE_ANT_SPEED = UPGRADE_DEFS.antSpeedLevel.getValue(state.upgrades.antSpeedLevel);
     const PHEROMONE_DROP = UPGRADE_DEFS.pheromoneDropLevel.getValue(state.upgrades.pheromoneDropLevel);
+    const SCOUT_SPEED_MULT = UPGRADE_DEFS.scoutSpeedLevel.getValue(state.upgrades.scoutSpeedLevel);
 
     for (const ant of state.ants) {
+        // Calculate per-ant stats
+        let currentSpeed = BASE_ANT_SPEED;
+        if (ant.type === AntType.SCOUT) {
+            currentSpeed *= 1.5 * SCOUT_SPEED_MULT;
+        } else if (ant.type === AntType.SOLDIER) {
+            currentSpeed *= 0.7; // Soldiers are slower
+        }
+
         // 1. Drop Pheromone based on current state
         const idx = getIndex(Math.floor(ant.x), Math.floor(ant.y));
         if (ant.state === AntState.SEARCHING) {
@@ -31,8 +40,8 @@ export function updateAnts(state: SimState) {
         ant.angle += (Math.random() - 0.5) * WANDER_STRENGTH;
 
         // 3. Move
-        const nx = ant.x + Math.cos(ant.angle) * ANT_SPEED;
-        const ny = ant.y + Math.sin(ant.angle) * ANT_SPEED;
+        const nx = ant.x + Math.cos(ant.angle) * currentSpeed;
+        const ny = ant.y + Math.sin(ant.angle) * currentSpeed;
 
         // Wall collisions
         if (nx < 0 || nx >= WORLD_WIDTH || ny < 0 || ny >= WORLD_HEIGHT) {
@@ -51,7 +60,7 @@ export function updateAnts(state: SimState) {
         const currentIdx = getIndex(Math.floor(ant.x), Math.floor(ant.y));
         const tile = state.grid[currentIdx];
 
-        if (ant.state === AntState.SEARCHING && tile === TileType.FOOD) {
+        if (ant.state === AntState.SEARCHING && tile === TileType.FOOD && ant.type !== AntType.SCOUT) {
             ant.state = AntState.RETURNING;
             ant.hasFood = true;
             ant.angle += Math.PI; // turn around
@@ -70,7 +79,12 @@ export function updateAnts(state: SimState) {
 }
 
 function steerAnt(ant: Ant, state: SimState) {
-    const SENSOR_DIST = UPGRADE_DEFS.sensorRangeLevel.getValue(state.upgrades.sensorRangeLevel);
+    let SENSOR_DIST = UPGRADE_DEFS.sensorRangeLevel.getValue(state.upgrades.sensorRangeLevel);
+    if (ant.type === AntType.SCOUT) {
+        const SCOUT_SPEED_MULT = UPGRADE_DEFS.scoutSpeedLevel.getValue(state.upgrades.scoutSpeedLevel);
+        SENSOR_DIST *= 1.5 * SCOUT_SPEED_MULT; // Scouts have longer sensor range
+    }
+
     const SENSOR_SPREAD = Math.PI / 4;
 
     const targetPheromone = ant.state === AntState.SEARCHING ? state.foodPheromones : state.homePheromones;
