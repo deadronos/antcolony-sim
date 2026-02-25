@@ -31,7 +31,7 @@ export const Brood3D: React.FC = () => {
             
             // Set scale and color based on type
             let scale = 0.5;
-            let color = new THREE.Color('#ffffff');
+            const color = new THREE.Color('#ffffff');
 
             if (item.type === BroodType.EGG) {
                 scale = 0.4;
