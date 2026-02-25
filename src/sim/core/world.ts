@@ -1,10 +1,11 @@
-import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
+import { WORLD_WIDTH, WORLD_HEIGHT, FOOD_INITIAL_QUANTITY } from '../../shared/constants';
 import { TileType } from './types';
 import { getIndex } from '../utils/grid';
 import { createNoise2D } from 'simplex-noise';
 
 export interface WorldSetupResult {
     grid: Uint8Array;
+    foodQuantity: Uint8Array;
     nestX: number;
     nestY: number;
 }
@@ -12,6 +13,7 @@ export interface WorldSetupResult {
 export function createWorld(): WorldSetupResult {
     const size = WORLD_WIDTH * WORLD_HEIGHT;
     const grid = new Uint8Array(size);
+    const foodQuantity = new Uint8Array(size);
     const noise2D = createNoise2D();
 
     // Default to empty
@@ -62,9 +64,10 @@ export function createWorld(): WorldSetupResult {
             // If noise is high, it's a potential food patch
             if (fn > 0.75) {
                 grid[idx] = TileType.FOOD;
+                foodQuantity[idx] = FOOD_INITIAL_QUANTITY;
             }
         }
     }
 
-    return { grid, nestX, nestY };
+    return { grid, foodQuantity, nestX, nestY };
 }

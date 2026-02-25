@@ -55,6 +55,10 @@ export function updateAnts(state: SimState) {
             ant.state = AntState.RETURNING;
             ant.hasFood = true;
             ant.angle += Math.PI; // turn around
+            state.foodQuantity[currentIdx]--;
+            if (state.foodQuantity[currentIdx] === 0) {
+                state.grid[currentIdx] = TileType.EMPTY;
+            }
         } else if (ant.state === AntState.RETURNING && tile === TileType.NEST) {
             ant.state = AntState.SEARCHING;
             ant.hasFood = false;

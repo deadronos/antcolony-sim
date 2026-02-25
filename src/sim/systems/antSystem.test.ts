@@ -16,9 +16,11 @@ describe('Ant System', () => {
         state = {
             tick: 0,
             ants: [],
+            brood: [],
             foodPheromones: new Float32Array(WORLD_WIDTH * WORLD_HEIGHT),
             homePheromones: new Float32Array(WORLD_WIDTH * WORLD_HEIGHT),
             grid,
+            foodQuantity: new Uint8Array(WORLD_WIDTH * WORLD_HEIGHT),
             colonyFood: 0,
             nestX: 10,
             nestY: 10,
@@ -33,7 +35,9 @@ describe('Ant System', () => {
     it('should pick up food when SEARCHING and standing on FOOD tile', () => {
         const foodX = 20;
         const foodY = 20;
-        state.grid[getIndex(foodX, foodY)] = TileType.FOOD;
+        const foodIdx = getIndex(foodX, foodY);
+        state.grid[foodIdx] = TileType.FOOD;
+        state.foodQuantity[foodIdx] = 5;
         
         state.ants.push({
             id: 1,
@@ -49,6 +53,31 @@ describe('Ant System', () => {
 
         expect(state.ants[0].state).toBe(AntState.RETURNING);
         expect(state.ants[0].hasFood).toBe(true);
+        expect(state.foodQuantity[foodIdx]).toBe(4);
+        expect(state.grid[foodIdx]).toBe(TileType.FOOD); // still has food
+    });
+
+    it('should deplete food tile to EMPTY when quantity reaches zero', () => {
+        const foodX = 20;
+        const foodY = 20;
+        const foodIdx = getIndex(foodX, foodY);
+        state.grid[foodIdx] = TileType.FOOD;
+        state.foodQuantity[foodIdx] = 1; // last unit
+
+        state.ants.push({
+            id: 1,
+            x: foodX,
+            y: foodY,
+            angle: 0,
+            state: AntState.SEARCHING,
+            hasFood: false,
+            wanderTimer: 10
+        });
+
+        updateAnts(state);
+
+        expect(state.foodQuantity[foodIdx]).toBe(0);
+        expect(state.grid[foodIdx]).toBe(TileType.EMPTY); // tile depleted
     });
 
     it('should deliver food when RETURNING and standing on NEST tile', () => {

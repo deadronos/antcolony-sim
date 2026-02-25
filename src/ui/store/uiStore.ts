@@ -20,14 +20,7 @@ export const useUIStore = create<UIStore>((set) => ({
     speedMultiplier: 1,
     showPheromones: true,
     renderMode: '2D',
-    setSimState: (state) => set((prev) => {
-        // If we have an existing state with a grid, and the new state is a snapshot (no grid),
-        // merge them to preserve the static grid data.
-        if (prev.simState && 'grid' in prev.simState && state && !('grid' in state)) {
-            return { simState: { ...prev.simState, ...state } };
-        }
-        return { simState: state };
-    }),
+    setSimState: (state) => set({ simState: state }),
     setPaused: (paused) => set({ isPaused: paused }),
     setSpeedMultiplier: (speed) => set({ speedMultiplier: speed }),
     setShowPheromones: (show) => set({ showPheromones: show }),

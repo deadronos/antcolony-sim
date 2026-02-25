@@ -5,6 +5,7 @@ import { createPheromones } from '../sim/core/pheromones';
 import { tick } from '../sim/core/tick';
 import { TICK_INTERVAL_MS } from '../shared/constants';
 import type { SimState, SimUpgrades, SimSnapshot } from '../sim/core/types';
+import { TileType } from '../sim/core/types';
 import { UPGRADE_DEFS, getUpgradeCost, INITIAL_UPGRADES } from '../sim/core/upgrades';
 
 let state: SimState | null = null;
@@ -15,7 +16,7 @@ let currentSpeed = 1;
 
 const api = {
     init() {
-        const { grid, nestX, nestY } = createWorld();
+        const { grid, foodQuantity, nestX, nestY } = createWorld();
         scratchBuffer = createPheromones();
         state = {
             tick: 0,
@@ -24,6 +25,7 @@ const api = {
             foodPheromones: createPheromones(),
             homePheromones: createPheromones(),
             grid,
+            foodQuantity,
             colonyFood: 100, // Start with some food for buying upgrades faster
             nestX,
             nestY,
@@ -75,12 +77,18 @@ const api = {
     },
     getSnapshot(): SimSnapshot | null {
         if (!state) return null;
+        let foodTileCount = 0;
+        for (let i = 0; i < state.grid.length; i++) {
+            if (state.grid[i] === TileType.FOOD) foodTileCount++;
+        }
         return {
             tick: state.tick,
             ants: state.ants, // Still an array of objects for now
             brood: state.brood,
             foodPheromones: state.foodPheromones,
             homePheromones: state.homePheromones,
+            grid: state.grid,
+            foodTileCount,
             colonyFood: state.colonyFood,
             upgrades: state.upgrades
         };
