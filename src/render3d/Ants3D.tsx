@@ -85,12 +85,10 @@ export const Ants3D: React.FC = () => {
             if (ant.hasFood) {
                 dummy.translateX(0.5);
                 dummy.translateY(0.4);
-                dummy.scale.set(1, 1, 1);
                 dummy.updateMatrix();
                 foodRef.current.setMatrixAt(i, dummy.matrix);
                 
                 // Reset to head
-                dummy.scale.set(1, 1, 1);
                 dummy.translateY(-0.4);
                 dummy.translateX(-0.5);
             } else {
