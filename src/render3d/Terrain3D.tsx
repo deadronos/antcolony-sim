@@ -13,7 +13,9 @@ export const Terrain3D: React.FC = () => {
     } | null>(null);
 
     React.useEffect(() => {
-        const buildTerrain = (st: SimState) => {
+        const buildTerrain = (st: SimState | SimSnapshot) => {
+            if (!('grid' in st)) return; // Don't try to build without grid data
+
             const nest: THREE.Matrix4[] = [];
             const food: THREE.Matrix4[] = [];
             const wall: THREE.Matrix4[] = [];

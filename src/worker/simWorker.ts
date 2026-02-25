@@ -20,6 +20,7 @@ const api = {
         state = {
             tick: 0,
             ants: createAnts(nestX, nestY),
+            brood: [],
             foodPheromones: createPheromones(),
             homePheromones: createPheromones(),
             grid,
@@ -77,6 +78,7 @@ const api = {
         return {
             tick: state.tick,
             ants: state.ants, // Still an array of objects for now
+            brood: state.brood,
             foodPheromones: state.foodPheromones,
             homePheromones: state.homePheromones,
             colonyFood: state.colonyFood,

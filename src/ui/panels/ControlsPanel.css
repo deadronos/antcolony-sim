@@ -32,6 +32,11 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.brood-stats {
+    margin-top: -12px;
+    background: rgba(255, 255, 255, 0.015);
+}
+
 .status-item {
     display: flex;
     flex-direction: column;

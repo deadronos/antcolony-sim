@@ -17,6 +17,7 @@
     "comlink": "^4.4.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "simplex-noise": "^4.0.3",
     "three": "^0.183.1",
     "zustand": "^5.0.11"
   },

@@ -12,6 +12,21 @@ export const AntState = {
 } as const;
 export type AntState = typeof AntState[keyof typeof AntState];
 
+export const BroodType = {
+    EGG: 0,
+    LARVA: 1,
+    PUPA: 2
+} as const;
+export type BroodType = typeof BroodType[keyof typeof BroodType];
+
+export interface BroodItem {
+    id: number;
+    type: BroodType;
+    progress: number; // 0 to 1
+    x: number;
+    y: number;
+}
+
 export interface Ant {
     id: number;
     x: number;
@@ -33,6 +48,7 @@ export interface SimUpgrades {
 export interface SimState {
     tick: number;
     ants: Ant[];
+    brood: BroodItem[];
     foodPheromones: Float32Array;
     homePheromones: Float32Array;
     grid: Uint8Array;    // TileType values mapped 1D
@@ -45,6 +61,7 @@ export interface SimState {
 export interface SimSnapshot {
     tick: number;
     ants: Ant[];
+    brood: BroodItem[];
     foodPheromones: Float32Array;
     homePheromones: Float32Array;
     colonyFood: number;

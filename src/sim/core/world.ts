@@ -1,6 +1,7 @@
 import { WORLD_WIDTH, WORLD_HEIGHT } from '../../shared/constants';
 import { TileType } from './types';
 import { getIndex } from '../utils/grid';
+import { createNoise2D } from 'simplex-noise';
 
 export interface WorldSetupResult {
     grid: Uint8Array;
@@ -11,6 +12,7 @@ export interface WorldSetupResult {
 export function createWorld(): WorldSetupResult {
     const size = WORLD_WIDTH * WORLD_HEIGHT;
     const grid = new Uint8Array(size);
+    const noise2D = createNoise2D();
 
     // Default to empty
     grid.fill(TileType.EMPTY);
@@ -19,52 +21,47 @@ export function createWorld(): WorldSetupResult {
     const nestX = Math.floor(WORLD_WIDTH / 2);
     const nestY = Math.floor(WORLD_HEIGHT / 2);
 
-    // Make a small 3x3 nest patch
+    // 1. Generate Organic Walls (Caves) using Simplex Noise
+    for (let y = 0; y < WORLD_HEIGHT; y++) {
+        for (let x = 0; x < WORLD_WIDTH; x++) {
+            const idx = getIndex(x, y);
+
+            // Don't spawn walls too close to the nest
+            const distToNest = Math.sqrt((x - nestX) ** 2 + (y - nestY) ** 2);
+            if (distToNest < 15) continue;
+
+            // Multiple octaves or scales for noise
+            const n = noise2D(x * 0.05, y * 0.05); // Large scale features
+            const detail = noise2D(x * 0.15, y * 0.15) * 0.3; // Small details
+            
+            if (n + detail > 0.4) {
+                grid[idx] = TileType.WALL;
+            }
+        }
+    }
+
+    // 2. Clear nest area (3x3)
     for (let y = nestY - 1; y <= nestY + 1; y++) {
         for (let x = nestX - 1; x <= nestX + 1; x++) {
             grid[getIndex(x, y)] = TileType.NEST;
         }
     }
 
-    // Add 2 food patches
-    const createFoodPatch = (cx: number, cy: number, radius: number) => {
-        for (let y = cy - radius; y <= cy + radius; y++) {
-            for (let x = cx - radius; x <= cx + radius; x++) {
-                if ((x - cx) ** 2 + (y - cy) ** 2 <= radius ** 2) {
-                    if (x >= 0 && x < WORLD_WIDTH && y >= 0 && y < WORLD_HEIGHT) {
-                        grid[getIndex(x, y)] = TileType.FOOD;
-                    }
-                }
-            }
-        }
-    };
+    // 3. Generate Food Patches using Noise
+    // We want a different seed or offset for food
+    const foodNoise = createNoise2D(); 
+    for (let y = 0; y < WORLD_HEIGHT; y++) {
+        for (let x = 0; x < WORLD_WIDTH; x++) {
+            const idx = getIndex(x, y);
+            
+            // Only place food in non-wall, non-nest areas
+            if (grid[idx] !== TileType.EMPTY) continue;
 
-    createFoodPatch(Math.floor(WORLD_WIDTH * 0.2), Math.floor(WORLD_HEIGHT * 0.2), 4);
-    createFoodPatch(Math.floor(WORLD_WIDTH * 0.8), Math.floor(WORLD_HEIGHT * 0.7), 6);
-
-    // Add random geometric obstacles (walls) to make pathing interesting
-    const numObstacles = 15;
-    for (let i = 0; i < numObstacles; i++) {
-        const cx = Math.floor(Math.random() * WORLD_WIDTH);
-        const cy = Math.floor(Math.random() * WORLD_HEIGHT);
-
-        // Don't spawn walls too close to the nest
-        const distToNest = Math.sqrt((cx - nestX) ** 2 + (cy - nestY) ** 2);
-        if (distToNest < 20) continue;
-
-        // Create a clump of walls
-        const w = 2 + Math.floor(Math.random() * 8);
-        const h = 2 + Math.floor(Math.random() * 8);
-
-        for (let y = cy; y < cy + h; y++) {
-            for (let x = cx; x < cx + w; x++) {
-                if (x >= 0 && x < WORLD_WIDTH && y >= 0 && y < WORLD_HEIGHT) {
-                    const idx = getIndex(x, y);
-                    // Only overwrite empty space
-                    if (grid[idx] === TileType.EMPTY) {
-                        grid[idx] = TileType.WALL;
-                    }
-                }
+            const fn = foodNoise(x * 0.03 + 100, y * 0.03 + 100);
+            
+            // If noise is high, it's a potential food patch
+            if (fn > 0.75) {
+                grid[idx] = TileType.FOOD;
             }
         }
     }

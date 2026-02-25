@@ -1,5 +1,6 @@
 import { useUIStore } from '../store/uiStore';
 import { simWorker } from '../../worker/simBridge';
+import { BroodType } from '../../sim/core/types';
 import './ControlsPanel.css';
 
 export const ControlsPanel = () => {
@@ -9,6 +10,10 @@ export const ControlsPanel = () => {
         showPheromones, setShowPheromones,
         renderMode, setRenderMode
     } = useUIStore();
+
+    const eggs = simState?.brood?.filter(b => b.type === BroodType.EGG).length || 0;
+    const larvae = simState?.brood?.filter(b => b.type === BroodType.LARVA).length || 0;
+    const pupae = simState?.brood?.filter(b => b.type === BroodType.PUPA).length || 0;
 
     const handlePlayPause = async () => {
         if (isPaused) {
@@ -46,7 +51,22 @@ export const ControlsPanel = () => {
                 </div>
                 <div className="status-item">
                     <span className="label">Colony Food</span>
-                    <span className="value text-highlight">{simState?.colonyFood || 0}</span>
+                    <span className="value text-highlight">{Math.floor(simState?.colonyFood || 0)}</span>
+                </div>
+            </div>
+
+            <div className="status-grid brood-stats">
+                <div className="status-item">
+                    <span className="label">Eggs</span>
+                    <span className="value">{eggs}</span>
+                </div>
+                <div className="status-item">
+                    <span className="label">Larvae</span>
+                    <span className="value">{larvae}</span>
+                </div>
+                <div className="status-item">
+                    <span className="label">Pupae</span>
+                    <span className="value">{pupae}</span>
                 </div>
             </div>
 
