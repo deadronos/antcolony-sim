@@ -16,11 +16,14 @@ function App() {
     // Init simulation on mount
     const init = async () => {
       await simWorker.init();
+      // Get initial full state once to populate static grid/nest
+      const initialState = await simWorker.getState();
+      setSimState(initialState);
       await simWorker.pause();
       setPaused(true);
     };
     init();
-  }, [setPaused]);
+  }, [setPaused, setSimState]);
 
   // Separate effect for rendering loop to ensure we pick up UI store changes
   useEffect(() => {
@@ -31,15 +34,15 @@ function App() {
       if (!isFetching) {
         isFetching = true;
         try {
-          const state = await simWorker.getState();
-          if (state) {
-            setSimState(state);
+          const snapshot = await simWorker.getSnapshot();
+          if (snapshot) {
+            setSimState(snapshot);
 
             // Only fire 2D canvas renders if we are actually looking at it
             if (useUIStore.getState().renderMode === '2D') {
               const ctx = canvasRef.current?.getContext('2d');
               if (ctx) {
-                renderSimulation(ctx, state, {
+                renderSimulation(ctx, snapshot as any, {
                   showPheromones: useUIStore.getState().showPheromones
                 });
               }

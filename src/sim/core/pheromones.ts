@@ -19,6 +19,8 @@ export function evaporatePheromones(grid: Float32Array, decayRate: number = 0.00
 
 // Simple blur for diffusion
 export function diffusePheromones(grid: Float32Array, tempGrid: Float32Array, diffusionRate: number = 0.1) {
+    tempGrid.set(grid); // Initialize tempGrid with current values to preserve edges
+
     for (let y = 1; y < WORLD_HEIGHT - 1; y++) {
         for (let x = 1; x < WORLD_WIDTH - 1; x++) {
             const idx = getIndex(x, y);
@@ -30,10 +32,10 @@ export function diffusePheromones(grid: Float32Array, tempGrid: Float32Array, di
                 grid[idx - WORLD_WIDTH] +
                 grid[idx + WORLD_WIDTH];
 
-            tempGrid[idx] = sum / 5.0; // very simple blur
+            const blurred = sum / 5.0;
 
-            // Keep some total amount or just smooth it
-            tempGrid[idx] = tempGrid[idx] * (1 - diffusionRate) + val * diffusionRate;
+            // Mix original and blurred based on diffusionRate
+            tempGrid[idx] = val * (1 - diffusionRate) + blurred * diffusionRate;
         }
     }
 
