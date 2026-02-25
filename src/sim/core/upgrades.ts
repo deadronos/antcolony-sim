@@ -38,13 +38,33 @@ export const UPGRADE_DEFS: Record<keyof SimUpgrades, UpgradeDef> = {
         costMultiplier: 1.8,
         maxLevel: 5,
         getValue: (lvl) => 0.1 + (lvl * 0.05) // Base: 0.1, Max: 0.35
+    },
+    scoutSpeedLevel: {
+        id: 'scoutSpeedLevel',
+        name: 'Scout Agility',
+        description: 'Increases scout movement speed and sensor efficiency.',
+        baseCost: 30,
+        costMultiplier: 1.7,
+        maxLevel: 5,
+        getValue: (lvl) => 1.0 + (lvl * 0.2) // Multiplier for scout base
+    },
+    soldierStrengthLevel: {
+        id: 'soldierStrengthLevel',
+        name: 'Soldier Strength',
+        description: 'Increases soldier defense against future threats.',
+        baseCost: 50,
+        costMultiplier: 2.0,
+        maxLevel: 5,
+        getValue: (lvl) => 1.0 + (lvl * 0.5) // Base: 1.0, Max: 3.5
     }
 };
 
 export const INITIAL_UPGRADES: SimUpgrades = {
     antSpeedLevel: 0,
     sensorRangeLevel: 0,
-    pheromoneDropLevel: 0
+    pheromoneDropLevel: 0,
+    scoutSpeedLevel: 0,
+    soldierStrengthLevel: 0
 };
 
 export function getUpgradeCost(def: UpgradeDef, currentLevel: number): number {

@@ -3,9 +3,14 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useUIStore } from '../ui/store/uiStore';
 import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from '../shared/constants';
+import { AntType } from '../sim/core/types';
 
 const dummy = new THREE.Object3D();
 const UP = new THREE.Vector3(0, 1, 0);
+
+const colorWorker = new THREE.Color('#1a1a1a');
+const colorScout = new THREE.Color('#2a4a6a'); // Slightly blue
+const colorSoldier = new THREE.Color('#5a2a2a'); // Slightly red
 
 export const Ants3D: React.FC = () => {
     const headRef = useRef<THREE.InstancedMesh>(null);
@@ -38,7 +43,7 @@ export const Ants3D: React.FC = () => {
     }, []);
 
     // Materials
-    const antMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: '#1a1a1a', roughness: 0.8 }), []);
+    const antMaterial = useMemo(() => new THREE.MeshStandardMaterial({ roughness: 0.8 }), []);
     const foodMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: '#88cc44', roughness: 0.4 }), []); // Green leaf/globule
 
     useFrame((state) => {
@@ -67,8 +72,25 @@ export const Ants3D: React.FC = () => {
             const wobbleY = 0.5 + Math.abs(speedWobble); // Bounce up/down
             const wobblePitch = speedWobble * 0.2; // Pitch back and forth
 
-            dummy.position.set(baseX, wobbleY, baseZ);
+            // Scale and Color based on Type
+            let scaleMult = 1.0;
+            let antColor = colorWorker;
+
+            if (ant.type === AntType.SOLDIER) {
+                scaleMult = 1.5;
+                antColor = colorSoldier;
+            } else if (ant.type === AntType.SCOUT) {
+                scaleMult = 0.8;
+                antColor = colorScout;
+            }
+
+            headRef.current.setColorAt(i, antColor);
+            thoraxRef.current.setColorAt(i, antColor);
+            abdomenRef.current.setColorAt(i, antColor);
+
+            dummy.position.set(baseX, wobbleY * scaleMult, baseZ);
             dummy.rotation.set(0, 0, 0); // reset
+            dummy.scale.set(scaleMult, scaleMult, scaleMult);
             dummy.rotateOnAxis(UP, -ant.angle); // Rotate around Y based on heading
             dummy.rotateZ(wobblePitch); // apply wobble pitch
 
@@ -77,30 +99,30 @@ export const Ants3D: React.FC = () => {
             thoraxRef.current.setMatrixAt(i, dummy.matrix);
 
             // Head (forward +X in local space)
-            dummy.translateX(0.8);
+            dummy.translateX(0.8 * scaleMult);
             dummy.updateMatrix();
             headRef.current.setMatrixAt(i, dummy.matrix);
 
             // Food (carried in front/top of head)
             if (ant.hasFood) {
-                dummy.translateX(0.5);
-                dummy.translateY(0.4);
+                dummy.translateX(0.5 * scaleMult);
+                dummy.translateY(0.4 * scaleMult);
                 dummy.updateMatrix();
                 foodRef.current.setMatrixAt(i, dummy.matrix);
                 
                 // Reset to head
-                dummy.translateY(-0.4);
-                dummy.translateX(-0.5);
+                dummy.translateY(-0.4 * scaleMult);
+                dummy.translateX(-0.5 * scaleMult);
             } else {
                 dummy.scale.set(0, 0, 0); // Hide
                 dummy.updateMatrix();
                 foodRef.current.setMatrixAt(i, dummy.matrix);
-                dummy.scale.set(1, 1, 1); // Reset
+                dummy.scale.set(scaleMult, scaleMult, scaleMult); // Reset
             }
 
             // Abdomen (backward -X in local space)
             // Revert Head translate (-0.8) and translate -1.2 to go backward
-            dummy.translateX(-2.0);
+            dummy.translateX(-2.0 * scaleMult);
             dummy.updateMatrix();
             abdomenRef.current.setMatrixAt(i, dummy.matrix);
         }
@@ -109,6 +131,10 @@ export const Ants3D: React.FC = () => {
         thoraxRef.current.instanceMatrix.needsUpdate = true;
         abdomenRef.current.instanceMatrix.needsUpdate = true;
         foodRef.current.instanceMatrix.needsUpdate = true;
+
+        if (headRef.current.instanceColor) headRef.current.instanceColor.needsUpdate = true;
+        if (thoraxRef.current.instanceColor) thoraxRef.current.instanceColor.needsUpdate = true;
+        if (abdomenRef.current.instanceColor) abdomenRef.current.instanceColor.needsUpdate = true;
     });
 
     const MAX_ANTS = 2000;

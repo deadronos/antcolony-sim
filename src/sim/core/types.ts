@@ -19,9 +19,17 @@ export const BroodType = {
 } as const;
 export type BroodType = typeof BroodType[keyof typeof BroodType];
 
+export const AntType = {
+    WORKER: 0,
+    SCOUT: 1,
+    SOLDIER: 2
+} as const;
+export type AntType = typeof AntType[keyof typeof AntType];
+
 export interface BroodItem {
     id: number;
     type: BroodType;
+    antType: AntType; // The caste this brood will hatch into
     progress: number; // 0 to 1
     x: number;
     y: number;
@@ -29,6 +37,7 @@ export interface BroodItem {
 
 export interface Ant {
     id: number;
+    type: AntType;
     x: number;
     y: number;
     angle: number;       // heading in radians
@@ -43,6 +52,8 @@ export interface SimUpgrades {
     antSpeedLevel: number;
     sensorRangeLevel: number;
     pheromoneDropLevel: number;
+    scoutSpeedLevel: number; // Scout specific
+    soldierStrengthLevel: number; // Soldier specific
 }
 
 export interface SimState {
@@ -58,6 +69,7 @@ export interface SimState {
     nestX: number;
     nestY: number;
     upgrades: SimUpgrades;
+    productionType: AntType;
 }
 
 export interface SimSnapshot {
@@ -70,4 +82,5 @@ export interface SimSnapshot {
     foodTileCount: number;
     colonyFood: number;
     upgrades: SimUpgrades;
+    productionType: AntType;
 }

@@ -1,6 +1,6 @@
 import { useUIStore } from '../store/uiStore';
 import { simWorker } from '../../worker/simBridge';
-import { BroodType } from '../../sim/core/types';
+import { BroodType, AntType } from '../../sim/core/types';
 import './ControlsPanel.css';
 
 export const ControlsPanel = () => {
@@ -36,6 +36,12 @@ export const ControlsPanel = () => {
         setSpeedMultiplier(newSpeed);
     };
 
+    const handleProductionType = async (type: AntType) => {
+        await simWorker.setProductionType(type);
+    };
+
+    const currentProductionType = simState?.productionType ?? AntType.WORKER;
+
     return (
         <div className="controls-panel">
             <h2 className="panel-title">Colony Controls</h2>
@@ -52,6 +58,30 @@ export const ControlsPanel = () => {
                 <div className="status-item">
                     <span className="label">Colony Food</span>
                     <span className="value text-highlight">{Math.floor(simState?.colonyFood || 0)}</span>
+                </div>
+            </div>
+
+            <div className="control-section">
+                <h3 className="section-title">Spawn Selection</h3>
+                <div className="button-group">
+                    <button
+                        className={`btn-toggle ${currentProductionType === AntType.WORKER ? 'active' : ''}`}
+                        onClick={() => handleProductionType(AntType.WORKER)}
+                    >
+                        Worker
+                    </button>
+                    <button
+                        className={`btn-toggle ${currentProductionType === AntType.SCOUT ? 'active' : ''}`}
+                        onClick={() => handleProductionType(AntType.SCOUT)}
+                    >
+                        Scout
+                    </button>
+                    <button
+                        className={`btn-toggle ${currentProductionType === AntType.SOLDIER ? 'active' : ''}`}
+                        onClick={() => handleProductionType(AntType.SOLDIER)}
+                    >
+                        Soldier
+                    </button>
                 </div>
             </div>
 

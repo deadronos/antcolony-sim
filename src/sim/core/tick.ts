@@ -48,6 +48,7 @@ export function tick(state: SimState, scratchBuffer: Float32Array) {
                 const newAntId = state.ants.length > 0 ? state.ants[state.ants.length - 1].id + 1 : 0;
                 state.ants.push({
                     id: newAntId,
+                    type: item.antType,
                     x: state.nestX,
                     y: state.nestY,
                     angle: Math.random() * Math.PI * 2,
@@ -74,6 +75,7 @@ export function tick(state: SimState, scratchBuffer: Float32Array) {
         state.brood.push({
             id: nextId,
             type: BroodType.EGG,
+            antType: state.productionType,
             progress: 0,
             x: bx,
             y: by

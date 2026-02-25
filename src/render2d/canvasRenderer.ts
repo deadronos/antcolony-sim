@@ -1,5 +1,5 @@
 import { CELL_SIZE, WORLD_WIDTH, WORLD_HEIGHT } from '../shared/constants';
-import { AntState, TileType, type SimState, type SimSnapshot } from '../sim/core/types';
+import { AntState, AntType, TileType, type SimState, type SimSnapshot } from '../sim/core/types';
 
 export interface RenderOptions {
     showPheromones: boolean;
@@ -99,13 +99,25 @@ export function renderSimulation(ctx: CanvasRenderingContext2D, state: SimState 
         ctx.translate((ant.x + 0.5) * CELL_SIZE, (ant.y + 0.5) * CELL_SIZE);
         ctx.rotate(ant.angle);
 
-        // Color based on searching logic
+        let scale = 1;
+        if (ant.type === AntType.SOLDIER) {
+            scale = 1.5; // Soldiers are larger
+        } else if (ant.type === AntType.SCOUT) {
+            scale = 0.8; // Scouts are slightly smaller
+        }
+        ctx.scale(scale, scale);
+
+        // Color based on searching logic and type
         if (ant.hasFood) {
             ctx.fillStyle = '#ffaa00'; // Yellowish for food carrier
+        } else if (ant.type === AntType.SOLDIER) {
+            ctx.fillStyle = '#ff5555'; // Reddish for soldier
+        } else if (ant.type === AntType.SCOUT) {
+            ctx.fillStyle = '#55aaff'; // Light blue for scout
         } else if (ant.state === AntState.SEARCHING) {
             ctx.fillStyle = '#ffffff'; // White default
         } else {
-            ctx.fillStyle = '#bbffbb'; // Soft green if returning but no food? (fallback)
+            ctx.fillStyle = '#bbffbb'; // Soft green if returning
         }
 
         // Simple shape
