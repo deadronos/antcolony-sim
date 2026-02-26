@@ -56,6 +56,15 @@ export const UPGRADE_DEFS: Record<keyof SimUpgrades, UpgradeDef> = {
         costMultiplier: 2.0,
         maxLevel: 5,
         getValue: (lvl) => 1.0 + (lvl * 0.5) // Base: 1.0, Max: 3.5
+    },
+    diggingSpeedLevel: {
+        id: 'diggingSpeedLevel',
+        name: 'Digging Speed',
+        description: 'Increases speed at which ants dig through walls.',
+        baseCost: 40,
+        costMultiplier: 1.8,
+        maxLevel: 5,
+        getValue: (lvl) => 1.0 + (lvl * 0.5) // Multiplier for digging progress
     }
 };
 
@@ -64,7 +73,8 @@ export const INITIAL_UPGRADES: SimUpgrades = {
     sensorRangeLevel: 0,
     pheromoneDropLevel: 0,
     scoutSpeedLevel: 0,
-    soldierStrengthLevel: 0
+    soldierStrengthLevel: 0,
+    diggingSpeedLevel: 0
 };
 
 export function getUpgradeCost(def: UpgradeDef, currentLevel: number): number {

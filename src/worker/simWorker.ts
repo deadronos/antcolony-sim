@@ -15,7 +15,7 @@ let currentSpeed = 1;
 
 const api = {
     init() {
-        const { grid, foodQuantity, foodTileCount, nestX, nestY } = createWorld();
+        const { grid, wallDamage, foodQuantity, foodTileCount, nestX, nestY } = createWorld();
         scratchBuffer = createPheromones();
         state = {
             tick: 0,
@@ -24,6 +24,7 @@ const api = {
             foodPheromones: createPheromones(),
             homePheromones: createPheromones(),
             grid,
+            wallDamage,
             foodQuantity,
             foodTileCount,
             colonyFood: 100, // Start with some food for buying upgrades faster
@@ -88,6 +89,7 @@ const api = {
             foodPheromones: state.foodPheromones,
             homePheromones: state.homePheromones,
             grid: state.grid,
+            wallDamage: state.wallDamage,
             foodTileCount: state.foodTileCount,
             colonyFood: state.colonyFood,
             upgrades: state.upgrades,

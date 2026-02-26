@@ -9,8 +9,32 @@ export function updateAnts(state: SimState) {
     const BASE_ANT_SPEED = UPGRADE_DEFS.antSpeedLevel.getValue(state.upgrades.antSpeedLevel);
     const PHEROMONE_DROP = UPGRADE_DEFS.pheromoneDropLevel.getValue(state.upgrades.pheromoneDropLevel);
     const SCOUT_SPEED_MULT = UPGRADE_DEFS.scoutSpeedLevel.getValue(state.upgrades.scoutSpeedLevel);
+    const DIGGING_MULT = UPGRADE_DEFS.diggingSpeedLevel.getValue(state.upgrades.diggingSpeedLevel);
+    const DIGGING_BASE_DAMAGE = 2;
+    const DIGGING_MAX_HEALTH = 100;
 
     for (const ant of state.ants) {
+        if (ant.state === AntState.DIGGING) {
+            if (ant.diggingTargetId !== undefined) {
+                if (state.grid[ant.diggingTargetId] === TileType.WALL) {
+                    state.wallDamage[ant.diggingTargetId] += DIGGING_BASE_DAMAGE * DIGGING_MULT;
+                    if (state.wallDamage[ant.diggingTargetId] >= DIGGING_MAX_HEALTH) {
+                        state.grid[ant.diggingTargetId] = TileType.EMPTY;
+                        state.wallDamage[ant.diggingTargetId] = 0;
+                        ant.state = AntState.SEARCHING;
+                        ant.diggingTargetId = undefined;
+                    }
+                } else {
+                    // Wall was destroyed by another ant
+                    ant.state = AntState.SEARCHING;
+                    ant.diggingTargetId = undefined;
+                }
+            } else {
+                ant.state = AntState.SEARCHING;
+            }
+            continue; // Skip movement and steering while digging
+        }
+
         // Calculate per-ant stats
         let currentSpeed = BASE_ANT_SPEED;
         if (ant.type === AntType.SCOUT) {
@@ -49,7 +73,12 @@ export function updateAnts(state: SimState) {
         } else {
             const nextIdx = getIndex(Math.floor(nx), Math.floor(ny));
             if (state.grid[nextIdx] === TileType.WALL) {
-                ant.angle += Math.PI; // Don't test wall bounce, just turn around
+                if ((ant.type === AntType.WORKER || ant.type === AntType.SOLDIER) && Math.random() < 0.2) {
+                    ant.state = AntState.DIGGING;
+                    ant.diggingTargetId = nextIdx;
+                } else {
+                    ant.angle += Math.PI; // Don't test wall bounce, just turn around
+                }
             } else {
                 ant.x = nx;
                 ant.y = ny;
