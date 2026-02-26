@@ -8,7 +8,8 @@ export type TileType = typeof TileType[keyof typeof TileType];
 
 export const AntState = {
     SEARCHING: 0,
-    RETURNING: 1
+    RETURNING: 1,
+    DIGGING: 2
 } as const;
 export type AntState = typeof AntState[keyof typeof AntState];
 
@@ -46,6 +47,7 @@ export interface Ant {
 
     // Timers and behavior states
     wanderTimer: number; // to occasionally pick a new random direction
+    diggingTargetId?: number; // target wall tile index
 }
 
 export interface SimUpgrades {
@@ -54,6 +56,7 @@ export interface SimUpgrades {
     pheromoneDropLevel: number;
     scoutSpeedLevel: number; // Scout specific
     soldierStrengthLevel: number; // Soldier specific
+    diggingSpeedLevel: number;
 }
 
 export interface SimState {
@@ -63,6 +66,7 @@ export interface SimState {
     foodPheromones: Float32Array;
     homePheromones: Float32Array;
     grid: Uint8Array;         // TileType values mapped 1D
+    wallDamage: Uint8Array;   // Damage tracked per tile
     foodQuantity: Uint8Array; // Remaining food units per tile (only meaningful for FOOD tiles)
     foodTileCount: number;    // Number of active food tiles
     colonyFood: number;
@@ -79,6 +83,7 @@ export interface SimSnapshot {
     foodPheromones: Float32Array;
     homePheromones: Float32Array;
     grid: Uint8Array;
+    wallDamage: Uint8Array;
     foodTileCount: number;
     colonyFood: number;
     upgrades: SimUpgrades;

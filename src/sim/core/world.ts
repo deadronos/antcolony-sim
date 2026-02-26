@@ -5,6 +5,7 @@ import { createNoise2D } from 'simplex-noise';
 
 export interface WorldSetupResult {
     grid: Uint8Array;
+    wallDamage: Uint8Array;
     foodQuantity: Uint8Array;
     foodTileCount: number;
     nestX: number;
@@ -14,11 +15,13 @@ export interface WorldSetupResult {
 export function createWorld(): WorldSetupResult {
     const size = WORLD_WIDTH * WORLD_HEIGHT;
     const grid = new Uint8Array(size);
+    const wallDamage = new Uint8Array(size);
     const foodQuantity = new Uint8Array(size);
     const noise2D = createNoise2D();
 
     // Default to empty
     grid.fill(TileType.EMPTY);
+    wallDamage.fill(0);
 
     // Setup nest in the center
     const nestX = Math.floor(WORLD_WIDTH / 2);
@@ -72,5 +75,5 @@ export function createWorld(): WorldSetupResult {
         }
     }
 
-    return { grid, foodQuantity, foodTileCount, nestX, nestY };
+    return { grid, wallDamage, foodQuantity, foodTileCount, nestX, nestY };
 }

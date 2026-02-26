@@ -20,6 +20,7 @@ describe('Ant System', () => {
             foodPheromones: new Float32Array(WORLD_WIDTH * WORLD_HEIGHT),
             homePheromones: new Float32Array(WORLD_WIDTH * WORLD_HEIGHT),
             grid,
+            wallDamage: new Uint8Array(WORLD_WIDTH * WORLD_HEIGHT),
             foodQuantity: new Uint8Array(WORLD_WIDTH * WORLD_HEIGHT),
             foodTileCount: 0,
             colonyFood: 0,
