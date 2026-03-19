@@ -62,4 +62,24 @@ describe('Pheromone Logic', () => {
         // but in the middle it should be very close.
         expect(totalAfter).toBeCloseTo(totalBefore, 5);
     });
+
+    it('should optimize diffusion by avoiding final array copy', () => {
+        // This test verifies that the optimized version doesn't do the final grid.set(tempGrid)
+        // by checking that tempGrid contains original values after diffusion
+        grid.fill(0);
+        const idx = getIndex(50, 50);
+        grid[idx] = 1.0;
+        
+        // Make a copy of original values
+        const originalValues = new Float32Array(grid);
+        
+        diffusePheromones(grid, scratch, 0.5);
+        
+        // After diffusion, scratch should still contain original values
+        // (not the diffused values), proving we didn't do the final copy
+        expect(scratch[idx]).toBeCloseTo(originalValues[idx]);
+        
+        // But grid should have the diffused values
+        expect(grid[idx]).toBeLessThan(originalValues[idx]);
+    });
 });

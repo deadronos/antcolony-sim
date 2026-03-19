@@ -17,28 +17,31 @@ export function evaporatePheromones(grid: Float32Array, decayRate: number = 0.00
     }
 }
 
-// Simple blur for diffusion
+// Optimized blur for diffusion - avoids unnecessary array copies
 export function diffusePheromones(grid: Float32Array, tempGrid: Float32Array, diffusionRate: number = 0.1) {
-    tempGrid.set(grid); // Initialize tempGrid with current values to preserve edges
+    // Use typed array set() method for efficient copying
+    tempGrid.set(grid);
 
+    // Perform diffusion calculation using original values from tempGrid
     for (let y = 1; y < WORLD_HEIGHT - 1; y++) {
         for (let x = 1; x < WORLD_WIDTH - 1; x++) {
             const idx = getIndex(x, y);
-            const val = grid[idx];
+            const val = tempGrid[idx]; // Use original value from tempGrid
 
-            const sum = val +
-                grid[idx - 1] +
-                grid[idx + 1] +
-                grid[idx - WORLD_WIDTH] +
-                grid[idx + WORLD_WIDTH];
+            // Sum neighboring cells using tempGrid (original values)
+            const sum = tempGrid[idx - 1] +
+                        tempGrid[idx + 1] +
+                        tempGrid[idx - WORLD_WIDTH] +
+                        tempGrid[idx + WORLD_WIDTH] +
+                        val;
 
             const blurred = sum / 5.0;
 
             // Mix original and blurred based on diffusionRate
-            tempGrid[idx] = val * (1 - diffusionRate) + blurred * diffusionRate;
+            grid[idx] = val * (1 - diffusionRate) + blurred * diffusionRate;
         }
     }
-
-    // Swap back
-    grid.set(tempGrid);
+    
+    // Note: We no longer need to copy tempGrid back to grid
+    // The result is already in grid, and tempGrid will be reused next time
 }
