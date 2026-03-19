@@ -5,6 +5,14 @@ import { UPGRADE_DEFS } from '../core/upgrades';
 
 const WANDER_STRENGTH = 0.2;
 
+/**
+ * Advance every ant by one tick.
+ *
+ * This function handles the colony's core state machine: ants deposit the
+ * appropriate pheromone, steer by sampling the pheromone field, wander with a
+ * little noise, collide with walls, dig through obstacles, and pick up or
+ * deliver food when they reach the right tiles.
+ */
 export function updateAnts(state: SimState) {
     const BASE_ANT_SPEED = UPGRADE_DEFS.antSpeedLevel.getValue(state.upgrades.antSpeedLevel);
     const PHEROMONE_DROP = UPGRADE_DEFS.pheromoneDropLevel.getValue(state.upgrades.pheromoneDropLevel);
@@ -114,6 +122,13 @@ export function updateAnts(state: SimState) {
     }
 }
 
+/**
+ * Bias an ant's heading toward the strongest pheromone signal.
+ *
+ * Three sensors sample ahead, left, and right at a configurable range. Searching
+ * ants follow food pheromones while avoiding home pheromones; returning ants do
+ * the reverse so they can retrace trails back to the nest.
+ */
 function steerAnt(ant: Ant, state: SimState) {
     let SENSOR_DIST = UPGRADE_DEFS.sensorRangeLevel.getValue(state.upgrades.sensorRangeLevel);
     if (ant.type === AntType.SCOUT) {

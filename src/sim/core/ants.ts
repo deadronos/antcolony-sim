@@ -1,6 +1,12 @@
 import { TOTAL_ANTS } from '../../shared/constants';
 import { AntState, AntType, type Ant } from './types';
 
+/**
+ * Create the initial colony population at the nest.
+ *
+ * Every ant starts at the nest with a random heading so the colony can fan
+ * out immediately without requiring a separate bootstrap phase.
+ */
 export function createAnts(nestX: number, nestY: number): Ant[] {
     const ants: Ant[] = [];
     for (let i = 0; i < TOTAL_ANTS; i++) {

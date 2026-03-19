@@ -9,7 +9,13 @@ const LARVA_DURATION = 200;
 const PUPA_DURATION = 150;
 const LARVA_FOOD_REQ = 0.05; // Food consumed per tick for larva progress
 
-// Run one simulation tick
+/**
+ * Advance the full simulation by one tick.
+ *
+ * The update order matters: ants move first so they can drop pheromones,
+ * pheromones then diffuse and evaporate, brood progress is updated, and finally
+ * the queen may spend colony food to lay a new egg.
+ */
 export function tick(state: SimState, scratchBuffer: Float32Array) {
     // 1. Update Ant positions, sensors, drops
     updateAnts(state);
