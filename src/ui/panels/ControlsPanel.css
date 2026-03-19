@@ -2,6 +2,7 @@
     position: absolute;
     top: 20px;
     right: 20px;
+    pointer-events: auto;
     background: rgba(18, 18, 20, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
