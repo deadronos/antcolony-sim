@@ -12,6 +12,13 @@ export interface WorldSetupResult {
     nestY: number;
 }
 
+/**
+ * Generate a fresh cave-like world for the colony.
+ *
+ * The map is built in layers: first we carve organic walls from simplex noise,
+ * then we clear a nest area, and finally we scatter food patches into the open
+ * spaces. The returned arrays are sized for direct use by the simulation loop.
+ */
 export function createWorld(): WorldSetupResult {
     const size = WORLD_WIDTH * WORLD_HEIGHT;
     const grid = new Uint8Array(size);
