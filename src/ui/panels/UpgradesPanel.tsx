@@ -22,7 +22,7 @@ export const UpgradesPanel = () => {
         const canAfford = simState.colonyFood >= cost;
 
         return (
-            <div key={def.id} className="upgrade-card">
+            <div key={def.id} className="upgrade-card" role="article" aria-label={`${def.name} upgrade level ${currentLevel}`}>
                 <div className="upgrade-header">
                     <h4>{def.name}</h4>
                     <span className="level-badge">Lv. {currentLevel} / {def.maxLevel}</span>
@@ -32,6 +32,9 @@ export const UpgradesPanel = () => {
                     className={`btn-purchase ${isMaxLevel ? 'maxed' : canAfford ? 'affordable' : 'locked'}`}
                     disabled={isMaxLevel || !canAfford}
                     onClick={() => handlePurchase(id)}
+                    aria-label={isMaxLevel ? `${def.name} upgrade at maximum level` : canAfford ? `Purchase ${def.name} upgrade for ${cost} food` : `Insufficient food for ${def.name} upgrade`}
+                    aria-disabled={isMaxLevel || !canAfford}
+                    tabIndex={0}
                 >
                     {isMaxLevel ? 'MAX LEVEL' : `Buy - ${cost} Food`}
                 </button>
@@ -40,7 +43,7 @@ export const UpgradesPanel = () => {
     });
 
     return (
-        <div className="controls-panel upgrades-panel">
+        <div className="controls-panel upgrades-panel" role="region" aria-label="Evolution lab upgrades">
             <h2 className="panel-title">Evolution Lab</h2>
             <div className="upgrades-list">
                 {upgrades}

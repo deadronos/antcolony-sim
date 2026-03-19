@@ -43,7 +43,7 @@ export const ControlsPanel = () => {
     const currentProductionType = simState?.productionType ?? AntType.WORKER;
 
     return (
-        <div className="controls-panel">
+        <div className="controls-panel" role="region" aria-label="Colony controls">
             <h2 className="panel-title">Colony Controls</h2>
 
             <div className="status-grid">
@@ -67,18 +67,30 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${currentProductionType === AntType.WORKER ? 'active' : ''}`}
                         onClick={() => handleProductionType(AntType.WORKER)}
+                        aria-label="Select worker ant type"
+                        aria-pressed={currentProductionType === AntType.WORKER}
+                        role="radio"
+                        tabIndex={0}
                     >
                         Worker
                     </button>
                     <button
                         className={`btn-toggle ${currentProductionType === AntType.SCOUT ? 'active' : ''}`}
                         onClick={() => handleProductionType(AntType.SCOUT)}
+                        aria-label="Select scout ant type"
+                        aria-pressed={currentProductionType === AntType.SCOUT}
+                        role="radio"
+                        tabIndex={0}
                     >
                         Scout
                     </button>
                     <button
                         className={`btn-toggle ${currentProductionType === AntType.SOLDIER ? 'active' : ''}`}
                         onClick={() => handleProductionType(AntType.SOLDIER)}
+                        aria-label="Select soldier ant type"
+                        aria-pressed={currentProductionType === AntType.SOLDIER}
+                        role="radio"
+                        tabIndex={0}
                     >
                         Soldier
                     </button>
@@ -104,10 +116,18 @@ export const ControlsPanel = () => {
                 <button
                     className={`btn-primary ${!isPaused ? 'active' : ''}`}
                     onClick={handlePlayPause}
+                    aria-label={isPaused ? 'Play simulation' : 'Pause simulation'}
+                    aria-pressed={!isPaused}
+                    tabIndex={0}
                 >
                     {isPaused ? '▶ Play' : '⏸ Pause'}
                 </button>
-                <button className="btn-secondary" onClick={handleReset}>
+                <button 
+                    className="btn-secondary" 
+                    onClick={handleReset}
+                    aria-label="Reset simulation"
+                    tabIndex={0}
+                >
                     ↺ Reset
                 </button>
             </div>
@@ -120,6 +140,10 @@ export const ControlsPanel = () => {
                             key={speed}
                             className={`btn-toggle ${speedMultiplier === speed ? 'active' : ''}`}
                             onClick={() => handleSpeed(speed)}
+                            aria-label={`Set simulation speed to ${speed}x`}
+                            aria-pressed={speedMultiplier === speed}
+                            role="radio"
+                            tabIndex={0}
                         >
                             {speed}x
                         </button>
@@ -133,12 +157,20 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${renderMode === '2D' ? 'active' : ''}`}
                         onClick={() => setRenderMode('2D')}
+                        aria-label="Switch to 2D map view"
+                        aria-pressed={renderMode === '2D'}
+                        role="radio"
+                        tabIndex={0}
                     >
                         2D Map
                     </button>
                     <button
                         className={`btn-toggle ${renderMode === '3D' ? 'active' : ''}`}
                         onClick={() => setRenderMode('3D')}
+                        aria-label="Switch to 3D orbit view"
+                        aria-pressed={renderMode === '3D'}
+                        role="radio"
+                        tabIndex={0}
                     >
                         3D Orbit
                     </button>
@@ -153,6 +185,9 @@ export const ControlsPanel = () => {
                         checked={showPheromones}
                         onChange={(e) => setShowPheromones(e.target.checked)}
                         disabled={renderMode !== '2D'}
+                        aria-label="Toggle pheromone heatmap overlay"
+                        aria-checked={showPheromones}
+                        tabIndex={0}
                     />
                     Pheromone Heatmap
                 </label>
