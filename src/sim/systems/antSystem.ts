@@ -97,10 +97,13 @@ export function updateAnts(state: SimState) {
             ant.state = AntState.RETURNING;
             ant.hasFood = true;
             ant.angle += Math.PI; // turn around
-            state.foodQuantity[currentIdx]--;
-            if (state.foodQuantity[currentIdx] === 0) {
-                state.grid[currentIdx] = TileType.EMPTY;
-                state.foodTileCount--;
+            // Only decrement if there's food available to prevent underflow
+            if (state.foodQuantity[currentIdx] > 0) {
+                state.foodQuantity[currentIdx]--;
+                if (state.foodQuantity[currentIdx] === 0) {
+                    state.grid[currentIdx] = TileType.EMPTY;
+                    state.foodTileCount--;
+                }
             }
         } else if (ant.state === AntState.RETURNING && tile === TileType.NEST) {
             ant.state = AntState.SEARCHING;
