@@ -1,12 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { simWorker } from './worker/simBridge';
 import { useUIStore } from './ui/store/uiStore';
 import { renderSimulation, invalidateStaticCanvas } from './render2d/canvasRenderer';
 import { ControlsPanel } from './ui/panels/ControlsPanel';
 import { UpgradesPanel } from './ui/panels/UpgradesPanel';
-import { AntScene } from './render3d/AntScene';
 import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from './shared/constants';
 import './index.css';
+
+const LazyAntScene = lazy(() =>
+  import('./render3d/AntScene').then((module) => ({ default: module.AntScene }))
+);
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -72,7 +75,7 @@ function App() {
     <div className="app-container" role="main" aria-label="Ant colony simulation">
       {isLoading ? (
         <div className="loading-overlay" role="alert" aria-live="polite">
-          <div className="loading-spinner" role="progressbar" aria-busy="true"></div>
+          <div className="loading-spinner" aria-hidden="true"></div>
           <p>Initializing Ant Colony...</p>
         </div>
       ) : (
@@ -89,7 +92,16 @@ function App() {
                 tabIndex={0}
               />
             ) : (
-              <AntScene />
+              <Suspense
+                fallback={
+                  <div className="loading-overlay" role="status" aria-live="polite" aria-label="Loading 3D view">
+                    <div className="loading-spinner" aria-hidden="true"></div>
+                    <p>Loading 3D view...</p>
+                  </div>
+                }
+              >
+                <LazyAntScene />
+              </Suspense>
             )}
           </div>
           <div className="panels-container">
