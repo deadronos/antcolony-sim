@@ -67,11 +67,15 @@ export function updateAnts(state: SimState) {
         const nx = ant.x + Math.cos(ant.angle) * currentSpeed;
         const ny = ant.y + Math.sin(ant.angle) * currentSpeed;
 
+        // Bound coordinates to prevent out-of-bounds access
+        const boundedNx = Math.max(0, Math.min(WORLD_WIDTH - 1, nx));
+        const boundedNy = Math.max(0, Math.min(WORLD_HEIGHT - 1, ny));
+
         // Wall collisions
         if (nx < 0 || nx >= WORLD_WIDTH || ny < 0 || ny >= WORLD_HEIGHT) {
             ant.angle += Math.PI; // Turn around
         } else {
-            const nextIdx = getIndex(Math.floor(nx), Math.floor(ny));
+            const nextIdx = getIndex(Math.floor(boundedNx), Math.floor(boundedNy));
             if (state.grid[nextIdx] === TileType.WALL) {
                 if ((ant.type === AntType.WORKER || ant.type === AntType.SOLDIER) && Math.random() < 0.2) {
                     ant.state = AntState.DIGGING;

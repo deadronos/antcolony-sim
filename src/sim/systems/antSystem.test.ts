@@ -139,4 +139,32 @@ describe('Ant System', () => {
         
         expect(diff).toBeLessThan(0.1); 
     });
+
+    it('should not cause out-of-bounds access when moving outside world bounds', () => {
+        // Place ant near edge moving outward
+        const antX = WORLD_WIDTH - 0.1;
+        const antY = WORLD_HEIGHT / 2;
+        
+        const initialAngle = 0; // Moving right (out of bounds)
+        state.ants.push({
+            id: 1,
+            type: AntType.WORKER,
+            x: antX,
+            y: antY,
+            angle: initialAngle,
+            state: AntState.SEARCHING,
+            hasFood: false,
+            wanderTimer: 100 
+        });
+
+        // This should not throw an error due to out-of-bounds access
+        expect(() => updateAnts(state)).not.toThrow();
+
+        // Ant should turn around
+        const targetAngle = Math.PI;
+        let diff = Math.abs(state.ants[0].angle - targetAngle) % (Math.PI * 2);
+        if (diff > Math.PI) diff = Math.PI * 2 - diff;
+        
+        expect(diff).toBeLessThan(0.1);
+    });
 });
