@@ -77,18 +77,22 @@ function App() {
         </div>
       ) : (
         <>
-          {renderMode === '2D' ? (
-            <canvas
-              ref={canvasRef}
-              width={WORLD_WIDTH * CELL_SIZE}
-              height={WORLD_HEIGHT * CELL_SIZE}
-              className="sim-canvas"
-            />
-          ) : (
-            <AntScene />
-          )}
-          <UpgradesPanel />
-          <ControlsPanel />
+          <div className="sim-container">
+            {renderMode === '2D' ? (
+              <canvas
+                ref={canvasRef}
+                width={WORLD_WIDTH * CELL_SIZE}
+                height={WORLD_HEIGHT * CELL_SIZE}
+                className="sim-canvas"
+              />
+            ) : (
+              <AntScene />
+            )}
+          </div>
+          <div className="panels-container">
+            <UpgradesPanel />
+            <ControlsPanel />
+          </div>
         </>
       )}
     </div>
