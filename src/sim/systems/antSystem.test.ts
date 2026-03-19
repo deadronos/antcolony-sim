@@ -167,4 +167,30 @@ describe('Ant System', () => {
         
         expect(diff).toBeLessThan(0.1);
     });
+
+    it('should not decrement food quantity below zero', () => {
+        const foodX = 30;
+        const foodY = 30;
+        const foodIdx = getIndex(foodX, foodY);
+        state.grid[foodIdx] = TileType.FOOD;
+        state.foodQuantity[foodIdx] = 0; // Already depleted
+        
+        state.ants.push({
+            id: 1,
+            type: AntType.WORKER,
+            x: foodX,
+            y: foodY,
+            angle: 0,
+            state: AntState.SEARCHING,
+            hasFood: false,
+            wanderTimer: 10
+        });
+
+        updateAnts(state);
+
+        // Ant should still pick up food (state change) but quantity shouldn't go negative
+        expect(state.ants[0].state).toBe(AntState.RETURNING);
+        expect(state.ants[0].hasFood).toBe(true);
+        expect(state.foodQuantity[foodIdx]).toBe(0); // Should not go negative
+    });
 });
