@@ -69,10 +69,10 @@ function App() {
   }, [setSimState]);
 
   return (
-    <div className="app-container">
+    <div className="app-container" role="main" aria-label="Ant colony simulation">
       {isLoading ? (
-        <div className="loading-overlay">
-          <div className="loading-spinner"></div>
+        <div className="loading-overlay" role="alert" aria-live="polite">
+          <div className="loading-spinner" role="progressbar" aria-busy="true"></div>
           <p>Initializing Ant Colony...</p>
         </div>
       ) : (
@@ -84,6 +84,9 @@ function App() {
                 width={WORLD_WIDTH * CELL_SIZE}
                 height={WORLD_HEIGHT * CELL_SIZE}
                 className="sim-canvas"
+                role="img"
+                aria-label="Ant colony simulation canvas"
+                tabIndex={0}
               />
             ) : (
               <AntScene />
