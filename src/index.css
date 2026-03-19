@@ -77,3 +77,65 @@ button:hover {
   color: #ccc;
   margin: 0;
 }
+
+/* Main Layout Containers */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.sim-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.panels-container {
+  position: relative;
+  z-index: 100;
+}
+
+/* Responsive Layout for Mobile Devices */
+@media (max-width: 768px) {
+  .controls-panel,
+  .upgrades-panel {
+    position: relative !important;
+    width: calc(100% - 40px) !important;
+    max-width: 400px;
+    margin: 10px auto;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+  }
+  
+  .upgrades-panel {
+    margin-top: 0;
+  }
+  
+  .app-container {
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .sim-canvas {
+    max-height: 60vh;
+    margin-bottom: 20px;
+  }
+}
+
+/* Tablet Layout */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .controls-panel {
+    width: 280px;
+    right: 10px;
+  }
+  
+  .upgrades-panel {
+    width: 300px;
+    left: 10px;
+  }
+}
