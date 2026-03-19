@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { simWorker } from './worker/simBridge';
 import { useUIStore } from './ui/store/uiStore';
 import { renderSimulation, invalidateStaticCanvas } from './render2d/canvasRenderer';
@@ -11,13 +11,18 @@ import './index.css';
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { setSimState, setPaused, renderMode } = useUIStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Init simulation on mount
     const init = async () => {
-      await simWorker.init();
-      await simWorker.pause();
-      setPaused(true);
+      try {
+        await simWorker.init();
+        await simWorker.pause();
+        setPaused(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
     init();
   }, [setPaused, setSimState]);
@@ -65,18 +70,27 @@ function App() {
 
   return (
     <div className="app-container">
-      {renderMode === '2D' ? (
-        <canvas
-          ref={canvasRef}
-          width={WORLD_WIDTH * CELL_SIZE}
-          height={WORLD_HEIGHT * CELL_SIZE}
-          className="sim-canvas"
-        />
+      {isLoading ? (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+          <p>Initializing Ant Colony...</p>
+        </div>
       ) : (
-        <AntScene />
+        <>
+          {renderMode === '2D' ? (
+            <canvas
+              ref={canvasRef}
+              width={WORLD_WIDTH * CELL_SIZE}
+              height={WORLD_HEIGHT * CELL_SIZE}
+              className="sim-canvas"
+            />
+          ) : (
+            <AntScene />
+          )}
+          <UpgradesPanel />
+          <ControlsPanel />
+        </>
       )}
-      <UpgradesPanel />
-      <ControlsPanel />
     </div>
   );
 }
