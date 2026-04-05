@@ -2,7 +2,8 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useUIStore } from '../ui/store/uiStore';
-import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from '../shared/constants';
+
+import { getWorldPosition } from './utils';
 import { BroodType } from '../sim/core/types';
 
 const dummy = new THREE.Object3D();
@@ -24,8 +25,7 @@ export const Brood3D: React.FC = () => {
 
         for (let i = 0; i < count; i++) {
             const item = state.brood[i];
-            const x = (item.x - WORLD_WIDTH / 2) * CELL_SIZE;
-            const z = (item.y - WORLD_HEIGHT / 2) * CELL_SIZE;
+            const [x, z] = getWorldPosition(item.x, item.y);
 
             dummy.position.set(x, 0.2, z);
             
