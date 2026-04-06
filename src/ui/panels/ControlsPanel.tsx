@@ -15,6 +15,13 @@ export const ControlsPanel = () => {
     const larvae = simState?.brood?.filter(b => b.type === BroodType.LARVA).length || 0;
     const pupae = simState?.brood?.filter(b => b.type === BroodType.PUPA).length || 0;
 
+    // Count ants currently carrying food
+    const antsWithFood = simState?.ants?.filter(a => a.hasFood).length || 0;
+
+    // Estimate food in world (remaining quantity in tiles) - only available in full SimState, not Snapshot
+    const foodInWorld = simState && 'foodQuantity' in simState ?
+        (simState as { foodQuantity?: Uint8Array }).foodQuantity?.reduce((sum: number, qty: number) => sum + qty, 0) || 0 : 0;
+
     const handlePlayPause = async () => {
         if (isPaused) {
             await simWorker.start();
@@ -56,8 +63,20 @@ export const ControlsPanel = () => {
                     <span className="value">{simState?.ants?.length || 0}</span>
                 </div>
                 <div className="status-item">
+                    <span className="label">Carrying Food</span>
+                    <span className="value text-highlight">{antsWithFood}</span>
+                </div>
+                <div className="status-item">
                     <span className="label">Colony Food</span>
                     <span className="value text-highlight">{Math.floor(simState?.colonyFood || 0)}</span>
+                </div>
+                <div className="status-item">
+                    <span className="label">Food Available</span>
+                    <span className="value">{foodInWorld}</span>
+                </div>
+                <div className="status-item">
+                    <span className="label">Food Patches</span>
+                    <span className="value">{simState?.foodTileCount || 0}</span>
                 </div>
             </div>
 

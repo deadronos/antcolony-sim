@@ -14,8 +14,8 @@ let isPaused = true;
 let currentSpeed = 1;
 
 const api = {
-    init() {
-        const { grid, wallDamage, foodQuantity, foodTileCount, nestX, nestY } = createWorld();
+    init(seed?: number) {
+        const { grid, wallDamage, foodQuantity, foodTileCount, nestX, nestY } = createWorld(seed);
         scratchBuffer = createPheromones();
         state = {
             tick: 0,
