@@ -16,9 +16,14 @@ function App() {
   const { setSimState, setPaused, renderMode, isPaused } = useUIStore();
   const [isLoading, setIsLoading] = useState(true);
 
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    return target instanceof HTMLElement &&
+      target.closest('button, input, textarea, select, option, a, [contenteditable="true"], [role="button"], [role="radio"], [role="checkbox"]') !== null;
+  };
+
   // Keyboard shortcuts
   const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (e.repeat || isInteractiveTarget(e.target)) return;
 
     switch (e.key.toLowerCase()) {
       case ' ':

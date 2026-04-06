@@ -90,6 +90,7 @@ const api = {
             homePheromones: state.homePheromones,
             grid: state.grid,
             wallDamage: state.wallDamage,
+            foodQuantity: state.foodQuantity,
             foodTileCount: state.foodTileCount,
             colonyFood: state.colonyFood,
             upgrades: state.upgrades,

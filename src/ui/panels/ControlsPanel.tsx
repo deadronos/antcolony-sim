@@ -18,9 +18,8 @@ export const ControlsPanel = () => {
     // Count ants currently carrying food
     const antsWithFood = simState?.ants?.filter(a => a.hasFood).length || 0;
 
-    // Estimate food in world (remaining quantity in tiles) - only available in full SimState, not Snapshot
-    const foodInWorld = simState && 'foodQuantity' in simState ?
-        (simState as { foodQuantity?: Uint8Array }).foodQuantity?.reduce((sum: number, qty: number) => sum + qty, 0) || 0 : 0;
+    // Estimate food in world (remaining quantity in tiles)
+    const foodInWorld = simState?.foodQuantity?.reduce((sum: number, qty: number) => sum + qty, 0) ?? 0;
 
     const handlePlayPause = async () => {
         if (isPaused) {
@@ -86,9 +85,7 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${currentProductionType === AntType.WORKER ? 'active' : ''}`}
                         onClick={() => handleProductionType(AntType.WORKER)}
-                        aria-label="Select worker ant type"
-                        aria-pressed={currentProductionType === AntType.WORKER}
-                        role="radio"
+                        aria-label={currentProductionType === AntType.WORKER ? 'Worker ant type, selected' : 'Select worker ant type'}
                         tabIndex={0}
                     >
                         Worker
@@ -96,9 +93,7 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${currentProductionType === AntType.SCOUT ? 'active' : ''}`}
                         onClick={() => handleProductionType(AntType.SCOUT)}
-                        aria-label="Select scout ant type"
-                        aria-pressed={currentProductionType === AntType.SCOUT}
-                        role="radio"
+                        aria-label={currentProductionType === AntType.SCOUT ? 'Scout ant type, selected' : 'Select scout ant type'}
                         tabIndex={0}
                     >
                         Scout
@@ -106,9 +101,7 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${currentProductionType === AntType.SOLDIER ? 'active' : ''}`}
                         onClick={() => handleProductionType(AntType.SOLDIER)}
-                        aria-label="Select soldier ant type"
-                        aria-pressed={currentProductionType === AntType.SOLDIER}
-                        role="radio"
+                        aria-label={currentProductionType === AntType.SOLDIER ? 'Soldier ant type, selected' : 'Select soldier ant type'}
                         tabIndex={0}
                     >
                         Soldier
@@ -136,7 +129,6 @@ export const ControlsPanel = () => {
                     className={`btn-primary ${!isPaused ? 'active' : ''}`}
                     onClick={handlePlayPause}
                     aria-label={isPaused ? 'Play simulation' : 'Pause simulation'}
-                    aria-pressed={!isPaused}
                     tabIndex={0}
                 >
                     {isPaused ? '▶ Play' : '⏸ Pause'}
@@ -159,9 +151,7 @@ export const ControlsPanel = () => {
                             key={speed}
                             className={`btn-toggle ${speedMultiplier === speed ? 'active' : ''}`}
                             onClick={() => handleSpeed(speed)}
-                            aria-label={`Set simulation speed to ${speed}x`}
-                            aria-pressed={speedMultiplier === speed}
-                            role="radio"
+                            aria-label={speedMultiplier === speed ? `Simulation speed ${speed}x, selected` : `Set simulation speed to ${speed}x`}
                             tabIndex={0}
                         >
                             {speed}x
@@ -176,9 +166,7 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${renderMode === '2D' ? 'active' : ''}`}
                         onClick={() => setRenderMode('2D')}
-                        aria-label="Switch to 2D map view"
-                        aria-pressed={renderMode === '2D'}
-                        role="radio"
+                        aria-label={renderMode === '2D' ? '2D map view, selected' : 'Switch to 2D map view'}
                         tabIndex={0}
                     >
                         2D Map
@@ -186,9 +174,7 @@ export const ControlsPanel = () => {
                     <button
                         className={`btn-toggle ${renderMode === '3D' ? 'active' : ''}`}
                         onClick={() => setRenderMode('3D')}
-                        aria-label="Switch to 3D orbit view"
-                        aria-pressed={renderMode === '3D'}
-                        role="radio"
+                        aria-label={renderMode === '3D' ? '3D orbit view, selected' : 'Switch to 3D orbit view'}
                         tabIndex={0}
                     >
                         3D Orbit
@@ -205,7 +191,6 @@ export const ControlsPanel = () => {
                         onChange={(e) => setShowPheromones(e.target.checked)}
                         disabled={renderMode !== '2D'}
                         aria-label="Toggle pheromone heatmap overlay"
-                        aria-checked={showPheromones}
                         tabIndex={0}
                     />
                     Pheromone Heatmap
