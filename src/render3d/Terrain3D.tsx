@@ -2,6 +2,7 @@ import React from 'react';
 import * as THREE from 'three';
 import { useUIStore } from '../ui/store/uiStore';
 import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from '../shared/constants';
+import { getWorldPosition } from './utils';
 import { TileType, type SimState, type SimSnapshot } from '../sim/core/types';
 
 export const Terrain3D: React.FC = () => {
@@ -21,8 +22,7 @@ export const Terrain3D: React.FC = () => {
             if (st.grid[i] !== TileType.FOOD) continue;
             const gx = i % WORLD_WIDTH;
             const gy = Math.floor(i / WORLD_WIDTH);
-            const x = (gx - WORLD_WIDTH / 2) * CELL_SIZE;
-            const z = (gy - WORLD_HEIGHT / 2) * CELL_SIZE;
+            const [x, z] = getWorldPosition(gx, gy);
             dummy.position.set(x, (CELL_SIZE * 0.6) / 2, z);
             dummy.scale.set(CELL_SIZE * 0.8, CELL_SIZE * 0.6, CELL_SIZE * 0.8);
             dummy.updateMatrix();
@@ -48,8 +48,7 @@ export const Terrain3D: React.FC = () => {
                 const gx = i % WORLD_WIDTH;
                 const gy = Math.floor(i / WORLD_WIDTH);
 
-                const x = (gx - WORLD_WIDTH / 2) * CELL_SIZE;
-                const z = (gy - WORLD_HEIGHT / 2) * CELL_SIZE;
+                const [x, z] = getWorldPosition(gx, gy);
 
                 dummy.position.set(x, yOffset, z);
 

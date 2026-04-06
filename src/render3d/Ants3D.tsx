@@ -2,7 +2,8 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useUIStore } from '../ui/store/uiStore';
-import { WORLD_WIDTH, WORLD_HEIGHT, CELL_SIZE } from '../shared/constants';
+
+import { getWorldPosition } from './utils';
 import { AntType } from '../sim/core/types';
 
 const dummy = new THREE.Object3D();
@@ -63,8 +64,7 @@ export const Ants3D: React.FC = () => {
         for (let i = 0; i < count; i++) {
             const ant = simState.ants[i];
 
-            const baseX = (ant.x - WORLD_WIDTH / 2) * CELL_SIZE;
-            const baseZ = (ant.y - WORLD_HEIGHT / 2) * CELL_SIZE;
+            const [baseX, baseZ] = getWorldPosition(ant.x, ant.y);
 
             // Wobble animation
             // Use ant id to desynchronize the wobble
