@@ -30,19 +30,19 @@ export const Brood3D: React.FC = () => {
             dummy.position.set(x, 0.2, z);
             
             // Set scale and color based on type
-            let scale = 0.5;
+
             const color = new THREE.Color('#ffffff');
 
             if (item.type === BroodType.EGG) {
-                scale = 0.4;
+                const scale = 0.4;
                 color.set('#ffffff'); // Pure white
                 dummy.scale.set(scale, scale * 0.7, scale);
             } else if (item.type === BroodType.LARVA) {
-                scale = 0.5 + (item.progress * 0.5); // Grows over time
+                const scale = 0.5 + (item.progress * 0.5); // Grows over time
                 color.set('#ffffdd'); // Creamy yellow
                 dummy.scale.set(scale * 1.2, scale * 0.8, scale);
             } else if (item.type === BroodType.PUPA) {
-                scale = 1.0;
+                const scale = 1.0;
                 color.set('#d2b48c'); // Tan / Light brown
                 dummy.scale.set(scale, scale * 0.8, scale);
             }
