@@ -84,6 +84,7 @@ export interface SimSnapshot {
     homePheromones: Float32Array;
     grid: Uint8Array;
     wallDamage: Uint8Array;
+    foodQuantity: Uint8Array;
     foodTileCount: number;
     colonyFood: number;
     upgrades: SimUpgrades;

@@ -1,7 +1,8 @@
 {
-  "name": "temp-vite",
+  "name": "antcolony-sim",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Interactive ant colony simulator with emergent behavior, pheromone trails, and brood lifecycle",
   "type": "module",
   "scripts": {
     "dev": "vite",

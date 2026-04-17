@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import { simWorker } from './worker/simBridge';
 import { useUIStore } from './ui/store/uiStore';
 import { renderSimulation, invalidateStaticCanvas } from './render2d/canvasRenderer';
@@ -13,8 +13,47 @@ const LazyAntScene = lazy(() =>
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { setSimState, setPaused, renderMode } = useUIStore();
+  const { setSimState, setPaused, renderMode, isPaused } = useUIStore();
   const [isLoading, setIsLoading] = useState(true);
+
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    return target instanceof HTMLElement &&
+      target.closest('button, input, textarea, select, option, a, [contenteditable="true"], [role="button"], [role="radio"], [role="checkbox"]') !== null;
+  };
+
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
+    if (e.repeat || isInteractiveTarget(e.target)) return;
+
+    switch (e.key.toLowerCase()) {
+      case ' ':
+        e.preventDefault();
+        if (isPaused) {
+          await simWorker.start();
+          setPaused(false);
+        } else {
+          await simWorker.pause();
+          setPaused(true);
+        }
+        break;
+      case 'r':
+        if (!e.metaKey && !e.ctrlKey) {
+          await simWorker.reset();
+          await simWorker.start();
+          setPaused(false);
+        }
+        break;
+      case 'p':
+        // Toggle pheromone overlay
+        useUIStore.getState().setShowPheromones(!useUIStore.getState().showPheromones);
+        break;
+    }
+  }, [isPaused, setPaused]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     // Init simulation on mount
